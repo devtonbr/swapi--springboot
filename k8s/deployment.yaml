@@ -17,8 +17,8 @@ spec:
           - name: swapispringboot-container
             image: 429741560719.dkr.ecr.us-east-1.amazonaws.com/apisexemplo:swapispringboot-latest
             ports:
-              - containerPort: 80
+              - containerPort: 5000
             envFrom:
               - configMapRef: 
-                  name: portal-configmap
+                  name: swapispringboot-configmap
 
