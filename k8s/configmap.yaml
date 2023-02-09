@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-    name: swapispringboot-configmap
-    namespace: apiexemplo
-data:
-    IP_SISTEMA: NA

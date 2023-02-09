@@ -1,16 +1,17 @@
 package br.com.swapi.api.starwars.service.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+
 
 import br.com.swapi.api.model.exception.FilmException;
 import br.com.swapi.api.model.starwars.service.FilmService;
 import br.com.swapi.api.model.vo.ReturnService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
 public class FilmsServiceTest {
 	
-	private transient static FilmService service;
+	private static final FilmService service;
 	
 	static { 
 		service = new FilmService();
@@ -24,9 +25,9 @@ public class FilmsServiceTest {
 		try {
 			
 			list = service.listAllFilmsByService();
-			Assert.assertTrue(list != null);
+			Assertions.assertNotNull(list);
 		} catch (FilmException e) {
-			Assert.fail(e.getMessage());
+			Assertions.fail(e.getMessage());
 		}
 				
 	}

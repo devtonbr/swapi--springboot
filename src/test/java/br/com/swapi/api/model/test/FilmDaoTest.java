@@ -1,7 +1,7 @@
 package br.com.swapi.api.model.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -19,7 +19,7 @@ public class FilmDaoTest extends AbstractTest implements Constants {
 	@Autowired
 	private transient FilmBean dao;
 	
-	private static MockHttpServletRequest request;
+	private static final MockHttpServletRequest request;
 	
 	static {
 		request = new MockHttpServletRequest();
@@ -34,22 +34,22 @@ public class FilmDaoTest extends AbstractTest implements Constants {
 	@Test
 	public void listAllSuccess() {
 		ReturnService ret = dao.listAll(request);
-		Assert.assertTrue(ret != null);
+		Assertions.assertNotNull(ret);
 	}
 	
 	@Test
 	public void findByIdSuccess() {
 		Film ret = dao.findById(request,1);
-		Assert.assertTrue(ret != null);
+		Assertions.assertNotNull(ret);
 	}
 	
 	@Test
 	public void findByIdFail() {
 		try {
 			Film ret = dao.findById(request,99);
-			Assert.fail(ret.getTitle());
+			Assertions.fail(ret.getTitle());
 		}catch (DaoException e){
-			Assert.assertTrue(e.getMessage(),true);
+			Assertions.assertNotNull(e.getMessage());
 		}
 	}
 	
@@ -58,7 +58,7 @@ public class FilmDaoTest extends AbstractTest implements Constants {
 		InputParameter input = new InputParameter();
 		input.setDescription("nova descriçao");
 		ObjectResponse ret = dao.updateDescription(request, 1, input);
-		Assert.assertTrue(ret != null);	
+		Assertions.assertNotNull(ret);
 	}
 
 }

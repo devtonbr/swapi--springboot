@@ -9,8 +9,6 @@ RUN mkdir /app
 COPY --from=build /src/target/*.jar /app/app.jar
 
 WORKDIR /app
-ENV JAVA_OPTS "$JAVA_OPTS \
-        -Dserver.port=5000"
 
 EXPOSE 5000 9090
 
