@@ -15,6 +15,6 @@ spec:
     spec:
         containers:
           - name: swapispringboot-container
-            image: 429741560719.dkr.ecr.us-east-1.amazonaws.com/apisexemplo:swapispringboot-latest
+            image: $aws_account_id.dkr.ecr.us-east-1.amazonaws.com/$aws_ecr_repository:$artifactory-$githash
             ports:
               - containerPort: 5000
