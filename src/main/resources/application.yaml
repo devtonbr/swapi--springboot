@@ -1,0 +1,18 @@
+logging:
+  level:
+    org.springframework.web: DEBUG
+server:
+  servlet:
+    context-path: /sw-springboot
+  port: 5000
+
+management:
+  server:
+    port: 9000
+  endpoints:
+    web:
+      exposure:
+        include: health, shutdown, prometheus
+  endpoint:
+    shutdown:
+      enabled: true
