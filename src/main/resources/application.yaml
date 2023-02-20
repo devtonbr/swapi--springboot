@@ -7,12 +7,18 @@ server:
   port: 5000
 
 management:
-  server:
-    port: 9000
   endpoints:
     web:
+      base-path: /
       exposure:
         include: health, shutdown, prometheus
   endpoint:
     shutdown:
       enabled: true
+      health:
+        show-details: always
+        probes:
+          enabled: true
+        group:
+          readiness:
+            include: diskSpace

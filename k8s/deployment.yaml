@@ -18,3 +18,9 @@ spec:
             image: $awsaccountid.dkr.ecr.us-east-1.amazonaws.com/$awsecrrepository:swapispringboot-$githash
             ports:
               - containerPort: 5000
+            livelinessProbe:
+              httpGet:
+                path: /sw-springboot/health
+                port: 5000
+                initialDelaySeconds: 3
+                periodSeconds: 3
