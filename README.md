@@ -11,7 +11,7 @@ O projeto contém alguns exemplos de serviço REST. O projeto já está configur
 ```
 Java 11 : ([https://www.oracle.com/br/java/technologies/javase/jdk11-archive-downloads.html]);
 
-Spring Boot na versÃ£o 2.5.6 :  (https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/2.5.6);
+Spring Boot na versão 2.5.6:  (https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/2.5.6);
 
 Eclipse ou Intellij
 
