@@ -1,19 +1,19 @@
 # SWAPI - POC (EXEC)
 
-Projeto conceito para utilizaÁ„o de ServiÁo Rest com Spring Boot
+Projeto conceito para utiliza√ß√£o de Servi√ßo Rest com Spring Boot
 
 ## Iniciando o Projeto
 
-O projeto contÈm alguns exemplos de serviÁo REST. O projeto j· est· configurado em modo standalone
+O projeto cont√©m alguns exemplos de servi√ßo REST. O projeto j√° est√° configurado em modo standalone
 
-### PrÈ requisitos
+### Pr√© requisitos
 
 ```
-Java 8 : (https://www.oracle.com/br/java/technologies/javase/javase-jdk8-downloads.html);
+Java 11 : ([https://www.oracle.com/br/java/technologies/javase/jdk11-archive-downloads.html]);
 
-Spring Boot na vers√£o 2.3.11.RELEASE :  (https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/2.3.11.RELEASE);
+Spring Boot na vers√É¬£o 2.5.6 :  (https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/2.5.6);
 
-Eclipse NEON ou superior : (https://www.eclipse.org/downloads/packages/release/mars/r/eclipse-ide-java-ee-developers);
+Eclipse ou Intellij
 
 Postman para Testes : (https://www.postman.com/downloads/)
 ```
@@ -22,7 +22,7 @@ Postman para Testes : (https://www.postman.com/downloads/)
 
 Utilize o postman Para rodar os testes.
 
-Collection est„o na raiz do repositÛrio.
+Collection est√£o na raiz do reposit√≥rio.
 
 
 ```
@@ -42,7 +42,7 @@ Inicie com a classe Application.java
 
 Basta executar o comando maven install
 
-Para rodar, v· na pasta target onde tem o artefato gerado e execute o comando:
+Para rodar, v√° na pasta target onde tem o artefato gerado e execute o comando:
 
 ```
 java -jar swapi-exec.jar
