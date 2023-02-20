@@ -45,7 +45,7 @@ Basta executar o comando maven install
 Para rodar, vá na pasta target onde tem o artefato gerado e execute o comando:
 
 ```
-java -jar swapi-exec.jar
+java -jar swapispringboot-0.0.1-SNAPSHOT.jar
 ```
 
 
