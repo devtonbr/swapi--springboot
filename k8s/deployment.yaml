@@ -21,8 +21,8 @@ spec:
               - containerPort: 9090
             livenessProbe:
               httpGet:
-                path: /sw-springboot/health
-                port: 5000
+                path: /actuator/health
+                port: 9090
               initialDelaySeconds: 120
               periodSeconds: 60
               timeoutSeconds: 10
@@ -30,8 +30,8 @@ spec:
               failureThreshold: 2
             readinessProbe:
               httpGet:
-                path: /sw-springboot/health
-                port: 5000
+                path: /actuator/health
+                port: 9090
               initialDelaySeconds: 120
               periodSeconds: 10
               timeoutSeconds: 10

@@ -7,9 +7,11 @@ server:
   port: 5000
 
 management:
+  server:
+    port: 9090
   endpoints:
     web:
-      base-path: /
+      base-path: /actuator
       exposure:
         include: health, shutdown, prometheus
   endpoint:
