@@ -10,4 +10,4 @@ scrape_configs:
     scrape_interval: 5s
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['localhost:9000'] #Servidor da minha aplicação
+      - targets: ['svc-swapispringboot:9000'] #Servidor da minha aplicação
