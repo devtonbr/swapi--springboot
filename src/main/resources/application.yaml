@@ -24,3 +24,8 @@ management:
         group:
           readiness:
             include: diskSpace
+
+opentracing:
+  jaeger:
+    http-sender:
+      url: http:// jaeger-collector.istio-system.svc.cluster.local:14268/api/traces
