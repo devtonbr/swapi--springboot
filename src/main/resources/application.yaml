@@ -26,6 +26,7 @@ management:
             include: diskSpace
 
 opentracing:
+  service-name: swapispringboot-app
   jaeger:
     http-sender:
       url: http://jaeger-collector.istio-system.svc.cluster.local:14268/api/traces
