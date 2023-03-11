@@ -1,4 +1,4 @@
-package br.com.swapi.api.controller.handler;
+package br.com.swapi.api.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

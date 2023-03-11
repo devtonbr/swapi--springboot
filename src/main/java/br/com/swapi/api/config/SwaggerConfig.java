@@ -1,4 +1,4 @@
-package br.com.swapi.api;
+package br.com.swapi.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,3 +1,29 @@
+spring:
+  profiles:
+    active: dev
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    banner-mode: 'OFF'
+  config:
+    import: "configserver:http://localhost:8888/config/"
+  cloud:
+    allow-override: true
+    config:
+      name: "swapispringboot"
+      label: master
+    retry:
+      max-attempts: 5000
+      initial-interval: 1500
+      multiplier: 1.5
+info:
+  app:
+    name: "@project.name@"
+    version: "@project.version@"
+    description: "@project.description@ "
+    base-package: "br.com.swapi.api"
+
 logging:
   level:
     org.springframework.web: DEBUG
@@ -29,4 +55,20 @@ opentracing:
   service-name: swapispringboot-app
   jaeger:
     http-sender:
-      url: http://jaeger-collector.istio-system.svc.cluster.local:14268/api/traces
+      url: ${JAEGER_HOST:http://jaeger-collector.istio-system.svc.cluster.local:14268/api/traces}
+
+resilience4j:
+  retry:
+    configs:
+      default:
+        maxRetryAttempts: 2
+        waitDuration: 5000
+      instance:
+        global:
+          baseConfig: default
+
+backend:
+  swapi:
+    endpoint: http://teste
+
+
