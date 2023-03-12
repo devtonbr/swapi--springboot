@@ -23,7 +23,7 @@ public class FilmService implements Constants{
 	
 	
 	 @Autowired
-	 private SwApiProperties properties;
+	 private SwApiProperties swApiProperties;
 
 	/**
 	 * Serviço que retorna a lista de filmes
@@ -35,7 +35,7 @@ public class FilmService implements Constants{
 		
 		 try {
 			HttpClient client = HttpClientBuilder.create().build();   
-			HttpResponse resp = client.execute(new HttpGet(URL_STARWARS_API_LIST_FILMS));
+			HttpResponse resp = client.execute(new HttpGet(swApiProperties.getEndpoint()));
 		    int statusCode = resp.getStatusLine().getStatusCode();
 		    if (statusCode != 200) {
 		    	throw new FilmException( new StringBuilder("Erro ao listar os filmes: HTTP STATUS: [").append(statusCode).append(']').toString());

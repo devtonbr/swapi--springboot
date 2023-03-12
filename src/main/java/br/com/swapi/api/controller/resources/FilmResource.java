@@ -33,8 +33,6 @@ import io.swagger.annotations.ApiResponses;
 public class FilmResource  {
 
 
-    @Autowired
-    private SwApiProperties swApiProperties;
 
     @Autowired
     private transient FilmBean filmsBean;
@@ -59,7 +57,6 @@ public class FilmResource  {
     		produces = MediaType.APPLICATION_JSON_VALUE
     		)
     public ResponseEntity<ReturnService> listAll() {
-        System.out.println(swApiProperties != null ? swApiProperties.getEndpoint() : "swApiProperties is null");
         return new ResponseEntity<ReturnService>(filmsBean.listAll(request),HttpStatus.OK);
     } 
     

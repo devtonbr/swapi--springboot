@@ -37,21 +37,6 @@ public class Application implements Constants {
     	LOGGER.info("Iniciando o a Aplicação - SWAPI");
         SpringApplication.run(Application.class, args);
     }
-    
-	@Bean
-	public ServletContextInitializer initializer() {
-	    return new ServletContextInitializer() {
 
-	        @Override
-	        public void onStartup(ServletContext servletContext) throws ServletException {
-	    		try {
-	    			LOGGER.info("Executando método onstartup");
-	    			servletContext.setAttribute(FILMS_ATTRIBUTE, new FilmService().listAllFilmsByService());
-	    		} catch (FilmException e) {
-	    			throw new RuntimeException("Erro ao listar os filmes",e);
-	    		}
-	        }
-	    };
-	}
 
 }

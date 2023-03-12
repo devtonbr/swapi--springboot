@@ -7,5 +7,5 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(SwApiProperties.class)
-public class SwApiConfigProperties {
+public class SwApiConfig {
 }
