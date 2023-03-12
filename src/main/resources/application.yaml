@@ -7,10 +7,12 @@ spring:
   main:
     banner-mode: 'OFF'
   config:
-    import: "configserver:http://localhost:8888/config/"
+    import: "configserver:${CONFIG_SERVER:http://localhost:8888/config/}"
   cloud:
     allow-override: true
     config:
+      username: develop
+      password: develop
       name: "swapispringboot"
       label: master
     retry:
