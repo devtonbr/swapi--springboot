@@ -2,6 +2,7 @@ package br.com.swapi.api.controller.resources;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.swapi.api.config.properties.SwApiProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +32,10 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping(value="/api")
 public class FilmResource  {
 
+
+    @Autowired
+    private SwApiProperties swApiProperties;
+
     @Autowired
     private transient FilmBean filmsBean;
     
@@ -54,6 +59,7 @@ public class FilmResource  {
     		produces = MediaType.APPLICATION_JSON_VALUE
     		)
     public ResponseEntity<ReturnService> listAll() {
+        System.out.println(swApiProperties != null ? swApiProperties.getEndpoint() : "swApiProperties is null");
         return new ResponseEntity<ReturnService>(filmsBean.listAll(request),HttpStatus.OK);
     } 
     

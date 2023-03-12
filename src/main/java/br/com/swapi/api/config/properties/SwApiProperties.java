@@ -3,7 +3,7 @@ package br.com.swapi.api.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("backend.swapi")
+@ConfigurationProperties(prefix = "backend.swapi")
 public class SwApiProperties {
 
     private String endpoint;

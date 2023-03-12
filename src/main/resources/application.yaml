@@ -17,6 +17,8 @@ spring:
       max-attempts: 5000
       initial-interval: 1500
       multiplier: 1.5
+      compatibility-verifier:
+        enabled=false:
 info:
   app:
     name: "@project.name@"
@@ -66,9 +68,3 @@ resilience4j:
       instance:
         global:
           baseConfig: default
-
-backend:
-  swapi:
-    endpoint: http://teste
-
-
