@@ -1,11 +1,15 @@
 package br.com.swapi.api.model.exception;
 
-public class FilmException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class FilmException extends RuntimeException {
 
 	/**
 	 * Serial id
 	 */
 	private static final long serialVersionUID = 7344015246384446900L;
+
+	private HttpStatus httpStatus;
 
 	/**
 	 * Construtor com parametros
@@ -27,7 +31,14 @@ public class FilmException extends Exception {
 	public FilmException(String message) {
 		super(message);
 	}
-	
-	
 
+
+	public FilmException(HttpStatus httpStatus, String message) {
+		super(message);
+		this.httpStatus = httpStatus;
+	}
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus;
+	}
 }

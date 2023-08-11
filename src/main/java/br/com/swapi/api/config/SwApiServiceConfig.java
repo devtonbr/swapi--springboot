@@ -32,7 +32,7 @@ public class SwApiServiceConfig implements ServletContextInitializer {
             LOGGER.info("Executando método onstartup");
             servletContext.setAttribute(FILMS_ATTRIBUTE, filmService.listAllFilmsByService());
         } catch (FilmException e) {
-            throw new RuntimeException("Erro ao listar os filmes",e);
+            throw new RuntimeException("Erro ao listar os filmes[".concat(e.getHttpStatus().toString()).concat("]"),e);
         }
     }
 }
