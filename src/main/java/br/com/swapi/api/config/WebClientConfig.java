@@ -12,7 +12,7 @@ public class WebClientConfig {
 
 
     @Bean
-    public WebClient webClientProdutos(WebClient.Builder builder) {
+    public WebClient webClientSwapi(WebClient.Builder builder) {
         return builder
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
