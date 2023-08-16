@@ -59,7 +59,6 @@ class FilmsServiceTest {
     @Mock
     private SwapiResponseSpecMock swapiResponseSpecMock;
 
-
     @BeforeEach
     void init() {
 
@@ -83,28 +82,33 @@ class FilmsServiceTest {
 
     @Test
     void listFilms_FilmException_HttpStatus400() {
+
         when(webClient.method(any(HttpMethod.class))).thenReturn(requestBodyUriMock);
         when(requestBodyUriMock.uri(anyString())).thenReturn(requestBodyMock);
         when(requestBodyMock.retrieve()).thenReturn(swapiResponseSpecMock);
         when(swapiResponseSpecMock.getStatus()).thenReturn(HttpStatus.BAD_REQUEST);
-        when(swapiResponseSpecMock.onStatus(any(), any())).thenCallRealMethod();
+        when(swapiResponseSpecMock.getBodyContent()).thenReturn("{json}");
+        when(swapiResponseSpecMock.onStatus(any(Predicate.class), any(Function.class))).thenCallRealMethod();
         FilmException filmException = assertThrows(FilmException.class,
                 () -> service.listAllFilmsByService(),
                 "call fails with Internal Server Error");
-        assertEquals(400,filmException.getHttpStatus().value());
+        assertEquals(400, filmException.getHttpStatus().value());
     }
 
     @Test
     void listFilms_FilmException_HttpStatus503() {
+
+
         when(webClient.method(any(HttpMethod.class))).thenReturn(requestBodyUriMock);
         when(requestBodyUriMock.uri(anyString())).thenReturn(requestBodyMock);
         when(requestBodyMock.retrieve()).thenReturn(swapiResponseSpecMock);
         when(swapiResponseSpecMock.getStatus()).thenReturn(HttpStatus.SERVICE_UNAVAILABLE);
+        when(swapiResponseSpecMock.getBodyContent()).thenReturn("{json}");
         when(swapiResponseSpecMock.onStatus(any(), any())).thenCallRealMethod();
         FilmException filmException = assertThrows(FilmException.class,
                 () -> service.listAllFilmsByService(),
                 "call fails with Internal Server Error");
-        assertEquals(503,filmException.getHttpStatus().value());
+        assertEquals(503, filmException.getHttpStatus().value());
     }
 
 

@@ -23,8 +23,10 @@ public class ReturnService implements Serializable {
 	private String previous;	
 	
 	private List<Film> results;
-	
-	
+
+	public ReturnService() {
+	}
+
 	/**
 	 * @param count
 	 * @param next

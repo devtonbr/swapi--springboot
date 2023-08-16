@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import br.com.swapi.api.model.constants.Constants;
 import br.com.swapi.api.model.exception.FilmException;
 import br.com.swapi.api.model.vo.ReturnService;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -35,11 +36,14 @@ public class FilmService implements Constants {
                 .method(HttpMethod.GET)
                 .uri(swApiProperties.getEndpoint())
                 .retrieve()
-                .onStatus(HttpStatus::isError, clientResponse -> {
-                    return Mono.error(new FilmException(clientResponse.statusCode(), "Erro ao listar os Filmes"));
-                })
+                .onStatus(HttpStatus::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class).flatMap(body -> Mono.error(
+                                new FilmException(clientResponse.statusCode(), body)
+                        ))
+                )
                 .bodyToMono(ReturnService.class);
         return responseService.block();
     }
+
 
 }
