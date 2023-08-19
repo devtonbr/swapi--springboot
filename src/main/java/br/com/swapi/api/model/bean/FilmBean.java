@@ -11,7 +11,7 @@ import br.com.swapi.api.model.constants.Constants;
 import br.com.swapi.api.model.dao.FilmDao;
 import br.com.swapi.api.model.vo.Film;
 import br.com.swapi.api.model.vo.InputParameter;
-import br.com.swapi.api.model.vo.ObjectResponse;
+import br.com.swapi.api.model.vo.ObjectRsp;
 import br.com.swapi.api.model.vo.ReturnService;
 
 /**
@@ -67,7 +67,7 @@ public class FilmBean implements Constants {
 	 * @return Objeto com as informações do filme
 	 */
 	@LoggerBean(Level.DEBUG)	
-	public ObjectResponse updateDescription(final HttpServletRequest request,final Integer id,final InputParameter inputParameter) {		
+	public ObjectRsp updateDescription(final HttpServletRequest request, final Integer id, final InputParameter inputParameter) {
 		return dao.updateDescription(request, dao.findById(request, id), inputParameter);
 	}
 

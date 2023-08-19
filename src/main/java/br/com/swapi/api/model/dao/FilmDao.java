@@ -9,7 +9,7 @@ import br.com.swapi.api.model.dao.aspects.ReturnNullObject;
 import br.com.swapi.api.model.dao.list.ReturnServiceHelper;
 import br.com.swapi.api.model.vo.Film;
 import br.com.swapi.api.model.vo.InputParameter;
-import br.com.swapi.api.model.vo.ObjectResponse;
+import br.com.swapi.api.model.vo.ObjectRsp;
 import br.com.swapi.api.model.vo.ReturnService;
 
 /**
@@ -62,9 +62,9 @@ public class FilmDao implements Constants  {
 	 * @return Objeto com as informações do filme
 	 */	
 	@ReturnNullObject
-	public ObjectResponse updateDescription(final HttpServletRequest request, final Film film, final InputParameter inputParameter) {
+	public ObjectRsp updateDescription(final HttpServletRequest request, final Film film, final InputParameter inputParameter) {
 		new ReturnServiceHelper(request).updateDescription(film, inputParameter);
-		return new ObjectResponse(SUCCESS_MESSAGE);
+		return new ObjectRsp(SUCCESS_MESSAGE);
 	}
 
 }

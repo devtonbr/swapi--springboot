@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Clayton Morais de Oliveira
  *
  */
-public class ObjectResponse implements Serializable {
+public class ObjectRsp implements Serializable {
 
 	/**
 	 * 
@@ -21,7 +21,7 @@ public class ObjectResponse implements Serializable {
 	 * Construtor com parametros
 	 * @param detail Mensagem
 	 */
-	public ObjectResponse(String detail) {
+	public ObjectRsp(String detail) {
 		this.detail = detail;
 	}
 

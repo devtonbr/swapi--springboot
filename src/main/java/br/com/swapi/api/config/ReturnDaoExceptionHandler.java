@@ -10,7 +10,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import br.com.swapi.api.model.exception.DaoException;
-import br.com.swapi.api.model.vo.ObjectResponse;
+import br.com.swapi.api.model.vo.ObjectRsp;
 import br.com.swapi.api.model.vo.statics.InternalServerError;
 
 @ControllerAdvice
@@ -26,9 +26,9 @@ public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {
      * @return Objeto de Retorno
      */	
 	@ExceptionHandler(Exception.class)
-    public final ResponseEntity<ObjectResponse> handleAllExceptions(Exception exception, WebRequest request) {
+    public final ResponseEntity<ObjectRsp> handleAllExceptions(Exception exception, WebRequest request) {
 		 LOGGER.error("Erro ao executar a api: "+exception.getMessage(), exception);
-	     return new ResponseEntity<ObjectResponse>(new InternalServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+	     return new ResponseEntity<ObjectRsp>(new InternalServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
  
     /**
@@ -39,10 +39,10 @@ public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {
      * @return Objeto de Retorno
      */
     @ExceptionHandler(DaoException.class)
-    public final ResponseEntity<ObjectResponse> handleNullDaoException(DaoException exception, WebRequest request) {
-    	ObjectResponse error = new ObjectResponse(exception.getMessage());
+    public final ResponseEntity<ObjectRsp> handleNullDaoException(DaoException exception, WebRequest request) {
+    	ObjectRsp error = new ObjectRsp(exception.getMessage());
     	LOGGER.error(exception.getMessage());
-        return new ResponseEntity<ObjectResponse>(error,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<ObjectRsp>(error,HttpStatus.NOT_FOUND);
     }
 	
 }

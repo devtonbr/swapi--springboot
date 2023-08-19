@@ -10,7 +10,7 @@ import br.com.swapi.api.model.constants.Constants;
 import br.com.swapi.api.model.exception.DaoException;
 import br.com.swapi.api.model.vo.Film;
 import br.com.swapi.api.model.vo.InputParameter;
-import br.com.swapi.api.model.vo.ObjectResponse;
+import br.com.swapi.api.model.vo.ObjectRsp;
 import br.com.swapi.api.model.vo.ReturnService;
 import br.com.swapi.api.test.AbstractTest;
 
@@ -57,7 +57,7 @@ public class FilmDaoTest extends AbstractTest implements Constants {
 	public void updateDescriptionSucess() {
 		InputParameter input = new InputParameter();
 		input.setDescription("nova descriçao");
-		ObjectResponse ret = dao.updateDescription(request, 1, input);
+		ObjectRsp ret = dao.updateDescription(request, 1, input);
 		Assertions.assertNotNull(ret);
 	}
 

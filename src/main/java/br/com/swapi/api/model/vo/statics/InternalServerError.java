@@ -1,9 +1,9 @@
 package br.com.swapi.api.model.vo.statics;
 
-import br.com.swapi.api.model.vo.ObjectResponse;
+import br.com.swapi.api.model.vo.ObjectRsp;
 
 
-public class InternalServerError extends ObjectResponse {
+public class InternalServerError extends ObjectRsp {
 
 	/**
 	 * 
