@@ -2,7 +2,6 @@ package br.com.swapi.api.controller.resources.impl;
 
 import br.com.swapi.api.controller.resources.mapper.FilmsMapper;
 import br.com.swapi.api.model.bean.FilmBean;
-import br.com.swapi.api.model.vo.ObjectRsp;
 import br.com.swapi.api.openapi.model.vo.FilmResponse;
 import br.com.swapi.api.openapi.model.vo.InputParameterRequest;
 import br.com.swapi.api.openapi.model.vo.ObjectResponse;

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -26,8 +27,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 
@@ -75,7 +75,7 @@ class FilmsServiceTest {
         when(requestBodyUriMock.uri(anyString())).thenReturn(requestBodyMock);
         when(requestBodyMock.retrieve()).thenReturn(responseMock);
         when(responseMock.onStatus(any(Predicate.class), any(Function.class))).thenReturn(responseMock);
-        when(responseMock.bodyToMono(ArgumentMatchers.eq(ReturnService.class))).thenReturn(Mono.just(returnService));
+        when(responseMock.bodyToMono(eq(ReturnService.class))).thenReturn(Mono.just(returnService));
         ReturnService list = service.listAllFilmsByService();
         Assertions.assertNotNull(list);
     }
@@ -109,6 +109,17 @@ class FilmsServiceTest {
                 () -> service.listAllFilmsByService(),
                 "call fails with Internal Server Error");
         assertEquals(503, filmException.getHttpStatus().value());
+    }
+
+    @Test
+    void test201Success(){
+        when(webClient.method(any(HttpMethod.class))).thenReturn(requestBodyUriMock);
+        when(requestBodyUriMock.uri(anyString())).thenReturn(requestBodyMock);
+        when(requestBodyMock.retrieve()).thenReturn(responseMock);
+        when(responseMock.onStatus(any(Predicate.class), any(Function.class))).thenReturn(responseMock);
+        when(responseMock.toEntity(eq(String.class))).thenReturn(Mono.just(ResponseEntity.status(201).body("ok")));
+        String list = service.simulate201();
+        Assertions.assertNotNull(list);
     }
 
 

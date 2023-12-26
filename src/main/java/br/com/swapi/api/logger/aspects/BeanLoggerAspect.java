@@ -9,19 +9,13 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-/**
- * Aspecto para logar informações do objeto Bean
- * 
- * @author Clayton Morais de Oliveira
- *
- */
 @Aspect
 @Component
-public class BusinessBeanLogger {
+public class BeanLoggerAspect {
 
 
-	@Around("@annotation(LoggerBean)")
-	public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+	@Around("@annotation(InjectLog)")
+	public Object logExecute(ProceedingJoinPoint joinPoint) throws Throwable {
 	    long start = System.currentTimeMillis();	 
 	    Object proceed = joinPoint.proceed();
 	    
@@ -29,8 +23,8 @@ public class BusinessBeanLogger {
 	    
 	    MethodSignature signature = (MethodSignature) joinPoint.getSignature();	    
 	    Method method = signature.getMethod();
-	    LoggerBean loggerBeanAnnotation = method.getAnnotation(LoggerBean.class);
-	    loggerBeanAnnotation.value().logger(
+	    InjectLog injectLogAnnotation = method.getAnnotation(InjectLog.class);
+	    injectLogAnnotation.value().log(
 	    		LogManager.getLogger(
 	    				joinPoint.getSignature().getClass()), 
 	    				new StringBuilder(joinPoint.getSignature().toLongString())

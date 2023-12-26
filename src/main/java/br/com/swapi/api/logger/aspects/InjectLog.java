@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LoggerBean {
-	Level value() default Level.FATAL;
+public @interface InjectLog {
+	LevelLogger value() default LevelLogger.FATAL;
 }

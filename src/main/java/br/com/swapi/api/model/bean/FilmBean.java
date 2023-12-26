@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.swapi.api.logger.aspects.Level;
-import br.com.swapi.api.logger.aspects.LoggerBean;
+import br.com.swapi.api.logger.aspects.LevelLogger;
+import br.com.swapi.api.logger.aspects.InjectLog;
 import br.com.swapi.api.model.constants.Constants;
 import br.com.swapi.api.model.dao.FilmDao;
 import br.com.swapi.api.model.vo.Film;
@@ -33,7 +33,7 @@ public class FilmBean implements Constants {
 	 * 
 	 * @return Lista do Objeto Filme
 	 */
-	@LoggerBean(Level.DEBUG)	
+	@InjectLog(LevelLogger.DEBUG)
     public ReturnService listAll(final HttpServletRequest request) {
     	  return dao.listAll(request);    	  
 	}
@@ -48,7 +48,7 @@ public class FilmBean implements Constants {
 	 * 
 	 * @return Objeto com as informações do filme
 	 */
-	@LoggerBean(Level.DEBUG)	
+	@InjectLog(LevelLogger.DEBUG)
 	public Film findById(final HttpServletRequest request, final Integer id) {
 		return dao.findById(request, id);
 		
@@ -66,7 +66,7 @@ public class FilmBean implements Constants {
 	 * 
 	 * @return Objeto com as informações do filme
 	 */
-	@LoggerBean(Level.DEBUG)	
+	@InjectLog(LevelLogger.DEBUG)
 	public ObjectRsp updateDescription(final HttpServletRequest request, final Integer id, final InputParameter inputParameter) {
 		return dao.updateDescription(request, dao.findById(request, id), inputParameter);
 	}

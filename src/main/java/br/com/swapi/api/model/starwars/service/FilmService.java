@@ -3,6 +3,7 @@ package br.com.swapi.api.model.starwars.service;
 import br.com.swapi.api.config.properties.SwApiProperties;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import br.com.swapi.api.model.constants.Constants;
@@ -32,7 +33,10 @@ public class FilmService implements Constants {
      */
     @CircuitBreaker(name = "listAllFilmsByService")
     public ReturnService listAllFilmsByService() throws FilmException {
-        Mono<ReturnService> responseService = this.webClient
+
+        String teste = simulate201();
+
+        var responseService = this.webClient
                 .method(HttpMethod.GET)
                 .uri(swApiProperties.getEndpoint())
                 .retrieve()
@@ -45,5 +49,20 @@ public class FilmService implements Constants {
         return responseService.block();
     }
 
+
+    public String simulate201(){
+        return this.webClient
+                .method(HttpMethod.GET)
+                .uri("https://httpstat.us/500")
+                .retrieve()
+                .onStatus(HttpStatus::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class).flatMap(body -> Mono.error(
+                                new FilmException(clientResponse.statusCode(), body)
+                        ))
+                )
+                .toEntity(String.class)
+                .map(HttpEntity::getBody)
+                .block();
+    }
 
 }
