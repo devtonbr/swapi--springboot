@@ -125,6 +125,22 @@ java -jar swapispringboot-0.0.1-SNAPSHOT.jar
 ```
 
 
+## CI/CD e deploy na cloud
+
+O workflow `.github/workflows/ci-cd.yml` roda no GitHub Actions a cada push ou pull request para `main`:
+
+1. **Build e testes**: `mvn verify` com Java 17.
+2. **Imagem Docker e teste de fumaça**: constrói a imagem, sobe o container e confere os endpoints.
+3. **Deploy no Render**: só em push para `main`, dispara o deploy pelo deploy hook.
+
+O deploy usa o plano gratuito do [Render](https://render.com), descrito em `render.yaml`. Para ativar:
+
+1. No Render, crie um **Blueprint** apontando para este repositório (ele lê o `render.yaml` e cria o serviço `swapi-springboot`).
+2. Em **Settings > Deploy Hook** do serviço, copie a URL.
+3. No GitHub, em **Settings > Secrets and variables > Actions**, crie o secret `RENDER_DEPLOY_HOOK_URL` com essa URL.
+
+Sem o secret, o job de deploy é ignorado e os demais continuam rodando. Na cloud a aplicação escuta na porta da variável `PORT` (padrão local: 5000) e o actuator não fica exposto. No plano gratuito o serviço hiberna sem uso; a primeira chamada depois disso demora, e o estado em memória volta ao original.
+
 ## Autores
 
 * **Clayton Morais de Oliveira** 

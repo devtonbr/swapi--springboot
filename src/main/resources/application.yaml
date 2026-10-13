@@ -16,7 +16,7 @@ logging:
 server:
   servlet:
     context-path: /sw-springboot
-  port: 5000
+  port: ${PORT:5000}
 
 backend:
   swapi:

@@ -1,0 +1,90 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build e testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Compila e roda os testes
+        run: mvn -B -ntp verify
+
+      - name: Publica os relatórios de teste em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports
+
+  docker:
+    name: Imagem Docker e teste de fumaça
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Constrói a imagem
+        run: docker build -t swapi-springboot:${{ github.sha }} .
+
+      - name: Sobe o container como na cloud (porta definida por PORT)
+        run: |
+          docker run -d --name swapi -p 8080:8080 \
+            -e PORT=8080 \
+            -e MANAGEMENT_TRACING_ENABLED=false \
+            swapi-springboot:${{ github.sha }}
+
+      - name: Aguarda a aplicação e confere os endpoints
+        run: |
+          base=http://localhost:8080/sw-springboot
+          for i in $(seq 1 30); do
+            if curl -fsS "$base/api/films" -o films.json; then break; fi
+            sleep 3
+          done
+          curl -fsS "$base/api/films" | grep -q '"version":1'
+          curl -fsS "$base/api/films/4" | grep -q '"episode_id":4'
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$base/api/films/99")" = "404"
+          curl -fsS -X PUT -H 'Content-Type: application/json' \
+            -d '{"description":"teste de fumaca"}' "$base/api/films/4" | grep -q '"version":2'
+          curl -fsS "$base/v3/api-docs" -o /dev/null
+
+      - name: Mostra o log do container
+        if: always()
+        run: docker logs swapi | tail -n 80
+
+  deploy:
+    name: Deploy no Render
+    needs: docker
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    steps:
+      - name: Dispara o deploy
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::notice::Secret RENDER_DEPLOY_HOOK_URL não configurado; deploy ignorado."
+            exit 0
+          fi
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL" -o /dev/null
+          echo "Deploy solicitado ao Render."

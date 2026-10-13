@@ -1,0 +1,16 @@
+# Blueprint do Render (https://render.com): cria o serviço web a partir do Dockerfile.
+# O deploy é disparado pelo GitHub Actions (deploy hook), depois dos testes; por isso autoDeploy fica desligado.
+services:
+  - type: web
+    name: swapi-springboot
+    runtime: docker
+    plan: free
+    region: virginia
+    autoDeploy: false
+    healthCheckPath: /sw-springboot/v3/api-docs
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: dev,jsonlog
+      # sem coletor de tracing na cloud
+      - key: MANAGEMENT_TRACING_ENABLED
+        value: "false"

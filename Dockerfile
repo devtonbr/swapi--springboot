@@ -15,4 +15,7 @@ EXPOSE 5000 9090
 # logs em formato json (um evento por linha)
 ENV SPRING_PROFILES_ACTIVE=dev,jsonlog
 
+# limita a memória da JVM à do container
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0"
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
