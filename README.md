@@ -133,13 +133,56 @@ O workflow `.github/workflows/ci-cd.yml` roda no GitHub Actions a cada push ou p
 2. **Imagem Docker e teste de fumaça**: constrói a imagem, sobe o container e confere os endpoints.
 3. **Deploy no Render**: só em push para `main`, dispara o deploy pelo deploy hook.
 
-O deploy usa o plano gratuito do [Render](https://render.com), descrito em `render.yaml`. Para ativar:
+O deploy usa o plano gratuito do [Render](https://render.com), descrito em `render.yaml`. O passo a passo está em "Configurando o Render".
 
-1. No Render, crie um **Blueprint** apontando para este repositório (ele lê o `render.yaml` e cria o serviço `swapi-springboot`).
-2. Em **Settings > Deploy Hook** do serviço, copie a URL.
-3. No GitHub, em **Settings > Secrets and variables > Actions**, crie o secret `RENDER_DEPLOY_HOOK_URL` com essa URL.
+Sem o secret `RENDER_DEPLOY_HOOK_URL`, o job de deploy é ignorado e os demais continuam rodando. Na cloud a aplicação escuta na porta da variável `PORT` (padrão local: 5000) e o actuator não fica exposto. No plano gratuito o serviço hiberna sem uso; a primeira chamada depois disso demora, e o estado em memória volta ao original.
 
-Sem o secret, o job de deploy é ignorado e os demais continuam rodando. Na cloud a aplicação escuta na porta da variável `PORT` (padrão local: 5000) e o actuator não fica exposto. No plano gratuito o serviço hiberna sem uso; a primeira chamada depois disso demora, e o estado em memória volta ao original.
+## Configurando o Render
+
+O Render não precisa ser instalado: é um serviço de cloud, e tudo é feito pelo navegador. O serviço é criado a partir do arquivo `render.yaml` deste repositório.
+
+### 1. Criar a conta
+
+1. Acesse [render.com](https://render.com) e clique em **Get Started**.
+2. Entre com a conta do GitHub. O plano gratuito não pede cartão de crédito.
+
+### 2. Criar o serviço pelo Blueprint
+
+1. No painel ([dashboard.render.com](https://dashboard.render.com)), clique em **New > Blueprint**.
+2. Autorize o Render a acessar o GitHub, se for pedido, e escolha este repositório.
+3. Dê um nome ao Blueprint, mantenha o branch `main` e confirme. O Render lê o `render.yaml` e mostra o serviço web `swapi-springboot`, no plano **Free**.
+4. Clique em **Apply** (ou **Deploy Blueprint**) e aguarde. O primeiro build da imagem Docker leva alguns minutos.
+
+### 3. Conferir se está no ar
+
+1. Abra o serviço `swapi-springboot`. A URL pública aparece no topo da página; se o nome já estiver em uso, o Render acrescenta um sufixo ao endereço.
+2. Na aba **Events**, o deploy deve aparecer como **Live**.
+3. Teste no navegador, trocando o endereço pelo do seu serviço:
+
+```
+https://swapi-springboot.onrender.com/sw-springboot/api/films
+https://swapi-springboot.onrender.com/sw-springboot/swagger-ui/index.html
+```
+
+### 4. Ligar o deploy automático pelo GitHub Actions
+
+O `render.yaml` deixa o deploy automático do Render desligado, para que a publicação só aconteça depois dos testes do pipeline.
+
+1. No serviço, em **Settings > Deploy Hook**, copie a URL.
+2. No GitHub, em **Settings > Secrets and variables > Actions > New repository secret**, crie o secret `RENDER_DEPLOY_HOOK_URL` com essa URL.
+3. A partir do próximo push em `main`, o job "Deploy no Render" mostra a mensagem "Deploy solicitado ao Render." e o novo deploy aparece na aba **Events** do serviço.
+
+### Custos e limites do plano gratuito
+
+- O plano gratuito não gera cobrança. Confira a página **Billing** do workspace para ver o consumo e se há cartão cadastrado.
+- O serviço hiberna depois de alguns minutos sem acesso. A primeira chamada seguinte demora perto de um minuto, e as descrições alteradas voltam ao original.
+- A API fica pública: qualquer pessoa com a URL consegue alterar as descrições pelo PUT.
+
+### Removendo a aplicação
+
+1. No serviço, em **Settings**, role até o fim da página e clique em **Delete Web Service**.
+2. Em **Blueprints**, abra o Blueprint, vá em **Settings** e clique em **Delete Blueprint**. Sem isso, uma nova sincronização recria o serviço.
+3. No GitHub, apague o secret `RENDER_DEPLOY_HOOK_URL`, senão o próximo push falha ao chamar um hook que não existe mais.
 
 ## Autores
 
