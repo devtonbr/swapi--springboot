@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.swapi.api.model.exception.DaoException;
-import br.com.swapi.api.model.vo.ObjectRsp;
-import br.com.swapi.api.model.vo.statics.InternalServerError;
+import br.com.swapi.api.exception.DaoException;
+import br.com.swapi.api.entity.ObjectRsp;
+import br.com.swapi.api.entity.statics.InternalServerError;
 
 @ControllerAdvice
 public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {

@@ -26,9 +26,9 @@ public class BeanLoggerAspect {
 	    InjectLog injectLogAnnotation = method.getAnnotation(InjectLog.class);
 	    injectLogAnnotation.value().log(
 	    		LogManager.getLogger(
-	    				joinPoint.getSignature().getClass()), 
+	    				joinPoint.getTarget().getClass()), 
 	    				new StringBuilder(joinPoint.getSignature().toLongString())
-	    				.append("executado em ")
+	    				.append(" executado em ")
 	    				.append(executionTime)
 	    				.append(" ms")
 	    				.toString());	    

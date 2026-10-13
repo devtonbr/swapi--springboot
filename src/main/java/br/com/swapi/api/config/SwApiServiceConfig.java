@@ -1,38 +1,36 @@
 package br.com.swapi.api.config;
 
 
-import br.com.swapi.api.Application;
-import br.com.swapi.api.model.exception.FilmException;
-import br.com.swapi.api.model.starwars.service.FilmService;
+import br.com.swapi.api.exception.FilmException;
+import br.com.swapi.api.usecase.SwapiUseCase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
-import javax.annotation.ManagedBean;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import static br.com.swapi.api.model.constants.Constants.FILMS_ATTRIBUTE;
-
-@ManagedBean
-public class SwApiServiceConfig implements ServletContextInitializer {
+@Component
+public class SwApiServiceConfig implements SmartInitializingSingleton {
 
 
     private static final Logger LOGGER = LogManager.getLogger(SwApiServiceConfig.class);
 
     @Autowired
-    private FilmService filmService;
+    private SwapiUseCase swapiUseCase;
 
+    /**
+     * Carrega os filmes na subida da aplicação, antes de aceitar requisições
+     */
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void afterSingletonsInstantiated() {
         try {
-            LOGGER.info("Executando método onstartup");
-            servletContext.setAttribute(FILMS_ATTRIBUTE, filmService.listAllFilmsByService());
+            LOGGER.info("Carregando os filmes na subida da aplicação");
+            swapiUseCase.loadAll();
         } catch (FilmException e) {
-            throw new RuntimeException("Erro ao listar os filmes[".concat(e.getHttpStatus().toString()).concat("]"),e);
+            throw new IllegalStateException("Erro ao listar os filmes[".concat(e.getHttpStatus().toString()).concat("]"),e);
+        } catch (WebClientRequestException e) {
+            throw new IllegalStateException("Erro ao conectar na api de filmes[".concat(e.getUri().toString()).concat("]"),e);
         }
     }
 }

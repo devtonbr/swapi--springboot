@@ -9,9 +9,9 @@ O projeto contém alguns exemplos de serviço REST. O projeto já está configur
 ### Pré requisitos
 
 ```
-Java 11 : ([https://www.oracle.com/br/java/technologies/javase/jdk11-archive-downloads.html]);
+Java 17;
 
-Spring Boot na versão 2.5.6:  (https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/2.5.6);
+Spring Boot na versão 3.4.5;
 
 Eclipse ou Intellij
 
@@ -20,27 +20,79 @@ Postman para Testes : (https://www.postman.com/downloads/)
 
 ## Rodando os Testes
 
-Utilize o postman Para rodar os testes.
+Execute os testes com Maven:
 
-Collection estão na raiz do repositório.
+```
+mvn test
+```
 
+## Automação BDD no Postman
+
+A collection está na raiz do repositório, no formato Postman v2.1 (o Bruno também importa esse arquivo).
 
 ```
 SWAPI - API - LOCAL.postman_collection.json
 ```
 
-## Rodando o SWAGGER
+Ela tem duas pastas:
 
- Para rodar o Swagger, utilize o endpoint abaixo.
-GET:/swagger-ui.html
+- **API**: todos os endpoints da aplicação, sem testes, para uso manual.
+- **Teste Automatizado**: os cenários BDD, com asserts.
+
+A pasta **Teste Automatizado** está organizada assim:
+
+- cada pasta é uma **Funcionalidade**;
+- cada subpasta é um **Cenário**, com o texto Gherkin na descrição;
+- cada requisição é um passo (**Dado**, **Quando** ou **E**), e os testes da requisição são os **Então**.
+
+Funcionalidades cobertas: consulta de filmes, alteração da descrição, controle de versão e documentação e saúde da aplicação (14 cenários).
+
+Para executar:
+
+1. Suba a aplicação (veja "Rodando local").
+2. Importe a collection no Postman.
+3. Abra a pasta **Teste Automatizado**, uma funcionalidade ou um cenário e clique em **Run**.
+
+Os cenários são independentes entre si e podem ser repetidos sem reiniciar a aplicação. Se necessário, ajuste as variáveis `baseUrl`, `actuatorUrl`, `filmId` e `otherFilmId` da collection.
+
+## OpenAPI
+
+A especificação e a interface Swagger UI estão disponíveis nos endpoints abaixo.
+
+```
+GET:/sw-springboot/v3/api-docs
+GET:/sw-springboot/swagger-ui/index.html
+```
 
 ## Rodando local
 
 Inicie com a classe Application.java
 
+## Variáveis de ambiente
+
+A aplicação não usa config-server. A configuração é feita por variáveis de ambiente:
+
+```
+SWAPI_ENDPOINT : endpoint da api de filmes do StarWars (padrão: https://swapi.py4e.com/api/films/)
+SPRING_PROFILES_ACTIVE : profile do Spring (padrão: dev)
+OTEL_EXPORTER_OTLP_TRACING_ENDPOINT : endpoint do coletor de tracing
+```
+
+## Estado em memória
+
+Os filmes são carregados da api do StarWars na subida da aplicação e ficam em memória. As descrições alteradas pelo PUT se perdem ao reiniciar.
+
+## Controle de versão
+
+Cada filme tem um campo `version`, que começa em 1 na carga e é incrementado em 1 toda vez que a descrição é alterada pelo PUT. Enviar a mesma descrição não altera a versão. A versão é devolvida na resposta do PUT e nas consultas.
+
 ## Deploy
 
-Basta executar o comando maven install
+Basta executar o comando Maven:
+
+```
+mvn clean package
+```
 
 Para rodar, vá na pasta target onde tem o artefato gerado e execute o comando:
 

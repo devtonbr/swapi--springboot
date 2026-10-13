@@ -16,6 +16,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReturnServiceResponse'
           description: SUCESSO
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectResponse'
+          description: ERRO INTERNO
       operationId: listAllFilms
       description: Lista os Filmes
   '/api/films/{id}':
@@ -37,10 +43,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/FilmResponse'
           description: SUCESSO
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectResponse'
+          description: FILME NAO ENCONTRADO
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectResponse'
+          description: ERRO INTERNO
       operationId: findById
       description: Obtém o filme
     put:
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -59,8 +78,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ObjectResponse'
+                $ref: '#/components/schemas/UpdateDescriptionResponse'
           description: SUCESSO
+        '400':
+          description: REQUISICAO INVALIDA
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectResponse'
+          description: FILME NAO ENCONTRADO
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectResponse'
+          description: ERRO INTERNO
       operationId: updateDescription
       description: Atualiza a descrição
 components:
@@ -591,6 +624,10 @@ components:
           type: string
         url:
           type: string
+        version:
+          format: int32
+          type: integer
+          description: Versão do filme, incrementada a cada alteração da descrição
       example:
         title: A New Hope
         episode_id: 4
@@ -644,15 +681,32 @@ components:
         created: '2014-12-10T14:23:31.880000Z'
         edited: '2014-12-20T19:49:45.256000Z'
         url: 'https://swapi.dev/api/films/1/'
+        version: 1
     InputParameterRequest:
       title: Root Type for InputParameterRequest
       description: ''
       type: object
+      required:
+        - description
       properties:
         description:
           type: string
       example:
         description: Descrição de Teste
+    UpdateDescriptionResponse:
+      title: Root Type for UpdateDescriptionResponse
+      description: Resultado da alteração da descrição
+      type: object
+      properties:
+        detail:
+          type: string
+        version:
+          format: int32
+          type: integer
+          description: Versão do filme após a alteração
+      example:
+        detail: Sucesso
+        version: 2
     ObjectResponse:
       title: Root Type for ObjectResponse
       description: ''

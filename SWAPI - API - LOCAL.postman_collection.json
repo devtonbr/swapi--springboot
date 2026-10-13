@@ -1,0 +1,1037 @@
+{
+	"info": {
+		"name": "SWAPI - API - LOCAL",
+		"description": "API de filmes (swapispringboot) rodando local.\n\n- **API**: todos os endpoints, para uso manual.\n- **Teste Automatizado**: cenários BDD com asserts, para o Collection Runner.\n\nPré-requisito: aplicação no ar em `baseUrl`. O estado fica em memória e volta ao original ao reiniciar.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/sw-springboot"
+		},
+		{
+			"key": "actuatorUrl",
+			"value": "http://localhost:9090/actuator"
+		},
+		{
+			"key": "filmId",
+			"value": "4"
+		},
+		{
+			"key": "otherFilmId",
+			"value": "5"
+		},
+		{
+			"key": "descricao",
+			"value": ""
+		},
+		{
+			"key": "descricaoAntes",
+			"value": ""
+		},
+		{
+			"key": "versaoAntes",
+			"value": ""
+		},
+		{
+			"key": "versaoAtual",
+			"value": ""
+		},
+		{
+			"key": "versaoOutroFilme",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "API",
+			"description": "Todos os endpoints da aplicação, para uso manual. As requisições não têm testes; altere os parâmetros e o corpo à vontade.",
+			"item": [
+				{
+					"name": "Filmes",
+					"item": [
+						{
+							"name": "Listar filmes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/api/films",
+								"description": "Lista todos os filmes, com a versão atual de cada um."
+							}
+						},
+						{
+							"name": "Buscar filme por id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/api/films/{{filmId}}",
+								"description": "Busca um filme pelo `episode_id`. Altere a variável `filmId` ou o final da URL."
+							}
+						},
+						{
+							"name": "Alterar descrição do filme",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": "{{baseUrl}}/api/films/{{filmId}}",
+								"description": "Altera a descrição do filme. A versão é incrementada quando o texto muda; reenviar o mesmo texto mantém a versão.",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"description\": \"Descrição de Teste\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Documentação e operação",
+					"item": [
+						{
+							"name": "OpenAPI (api-docs)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/v3/api-docs",
+								"description": "Contrato OpenAPI em JSON."
+							}
+						},
+						{
+							"name": "Swagger UI",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{baseUrl}}/swagger-ui/index.html",
+								"description": "Interface do Swagger UI (abra no navegador para usar)."
+							}
+						},
+						{
+							"name": "Health",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{actuatorUrl}}/health",
+								"description": "Saúde da aplicação."
+							}
+						},
+						{
+							"name": "Métricas (Prometheus)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{actuatorUrl}}/prometheus",
+								"description": "Métricas no formato Prometheus."
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Teste Automatizado",
+			"description": "Cenários em estilo BDD. Cada pasta é uma **Funcionalidade**, cada subpasta é um **Cenário** e cada requisição é um passo (**Dado**, **Quando** ou **E**). Os testes de cada requisição são os **Então**.\n\nOs cenários são independentes entre si: cada um captura o estado de que precisa no próprio passo \"Dado\". Execute esta pasta inteira, uma funcionalidade ou um único cenário pelo Collection Runner; a execução pode ser repetida sem reiniciar a aplicação.",
+			"item": [
+				{
+					"name": "Funcionalidade: Consulta de filmes",
+					"description": "Como consumidor da API\nQuero consultar os filmes carregados do StarWars\nPara exibir seus dados e a versão atual de cada um",
+					"item": [
+						{
+							"name": "Cenário: Listar todos os filmes",
+							"description": "```gherkin\nCenário: Listar todos os filmes\n  Quando consulto a lista de filmes\n  Então o status da resposta é 200\n  E a lista de filmes não está vazia\n  E cada filme traz identificador, título, descrição e versão\n```",
+							"item": [
+								{
+									"name": "Quando consulto a lista de filmes",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a lista de filmes não está vazia', () => {",
+													"    const body = pm.response.json();",
+													"    pm.expect(body.results).to.be.an('array');",
+													"    pm.expect(body.results.length).to.be.above(0);",
+													"    pm.expect(body.count).to.eql(body.results.length);",
+													"});",
+													"pm.test('E cada filme traz identificador, título, descrição e versão', () => {",
+													"    pm.response.json().results.forEach((film) => {",
+													"        pm.expect(film).to.have.property('episode_id');",
+													"        pm.expect(film).to.have.property('title');",
+													"        pm.expect(film).to.have.property('opening_crawl');",
+													"        pm.expect(film.version).to.be.at.least(1);",
+													"    });",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Buscar um filme existente pelo id",
+							"description": "```gherkin\nCenário: Buscar um filme existente pelo id\n  Quando consulto o filme pelo id\n  Então o status da resposta é 200\n  E o filme retornado é o solicitado\n  E o filme traz título, descrição, diretor e versão\n```",
+							"item": [
+								{
+									"name": "Quando consulto o filme pelo id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E o filme retornado é o solicitado', () => {",
+													"    pm.expect(String(pm.response.json().episode_id)).to.eql(String(pm.collectionVariables.get('filmId')));",
+													"});",
+													"pm.test('E o filme traz título, descrição, diretor e versão', () => {",
+													"    const film = pm.response.json();",
+													"    pm.expect(film).to.have.property('title');",
+													"    pm.expect(film).to.have.property('opening_crawl');",
+													"    pm.expect(film).to.have.property('director');",
+													"    pm.expect(film.version).to.be.at.least(1);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Buscar um filme inexistente",
+							"description": "```gherkin\nCenário: Buscar um filme inexistente\n  Quando consulto um filme que não existe\n  Então o status da resposta é 404\n  E a mensagem informa que não há dados\n```",
+							"item": [
+								{
+									"name": "Quando consulto um filme que não existe",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 404', () => pm.response.to.have.status(404));",
+													"pm.test('E a mensagem informa que não há dados', () => pm.expect(pm.response.json().detail).to.eql('Sem dados retornados'));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/99"
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Funcionalidade: Alteração da descrição",
+					"description": "Como consumidor da API\nQuero alterar a descrição de um filme\nPara manter o texto atualizado",
+					"item": [
+						{
+							"name": "Cenário: Alterar a descrição com sucesso",
+							"description": "```gherkin\nCenário: Alterar a descrição com sucesso\n  Quando altero a descrição do filme\n  Então o status da resposta é 200\n  E a resposta informa sucesso\n  E a consulta do filme mostra a nova descrição\n```",
+							"item": [
+								{
+									"name": "Quando altero a descrição do filme",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a resposta informa sucesso', () => pm.expect(pm.response.json().detail).to.eql('Sucesso'));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o filme alterado",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a consulta do filme mostra a nova descrição', () => {",
+													"    pm.expect(pm.response.json().opening_crawl).to.eql(pm.collectionVariables.get('descricao'));",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Alterar sem informar a descrição",
+							"description": "```gherkin\nCenário: Alterar sem informar a descrição\n  Dado que consulto o filme antes da alteração\n  Quando altero o filme sem informar a descrição\n  Então o status da resposta é 400\n  E o filme permanece com a mesma descrição e a mesma versão\n```",
+							"item": [
+								{
+									"name": "Dado que consulto o filme antes da alteração",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Dado atendido: o filme existe', () => pm.response.to.have.status(200));",
+													"pm.collectionVariables.set('descricaoAntes', pm.response.json().opening_crawl);",
+													"pm.collectionVariables.set('versaoAntes', pm.response.json().version);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								},
+								{
+									"name": "Quando altero o filme sem informar a descrição",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 400', () => pm.response.to.have.status(400));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o filme novamente",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E o filme permanece com a mesma descrição e a mesma versão', () => {",
+													"    const film = pm.response.json();",
+													"    pm.expect(film.opening_crawl).to.eql(pm.collectionVariables.get('descricaoAntes'));",
+													"    pm.expect(film.version).to.eql(Number(pm.collectionVariables.get('versaoAntes')));",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Alterar sem corpo na requisição",
+							"description": "```gherkin\nCenário: Alterar sem corpo na requisição\n  Quando altero o filme sem enviar corpo na requisição\n  Então o status da resposta é 400\n```",
+							"item": [
+								{
+									"name": "Quando altero o filme sem enviar corpo na requisição",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 400', () => pm.response.to.have.status(400));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Alterar um filme inexistente",
+							"description": "```gherkin\nCenário: Alterar um filme inexistente\n  Quando altero a descrição de um filme que não existe\n  Então o status da resposta é 404\n  E a mensagem informa que não há dados\n```",
+							"item": [
+								{
+									"name": "Quando altero a descrição de um filme que não existe",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 404', () => pm.response.to.have.status(404));",
+													"pm.test('E a mensagem informa que não há dados', () => pm.expect(pm.response.json().detail).to.eql('Sem dados retornados'));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/99",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Funcionalidade: Controle de versão",
+					"description": "Como consumidor da API\nQuero que a versão do filme seja incrementada a cada alteração da descrição\nPara saber quantas vezes o filme foi alterado",
+					"item": [
+						{
+							"name": "Cenário: A versão é incrementada a cada alteração",
+							"description": "```gherkin\nCenário: A versão é incrementada a cada alteração\n  Dado que consulto a versão atual do filme\n  Quando altero a descrição do filme\n  Então o status da resposta é 200\n  E a versão devolvida é a anterior mais 1\n  E a consulta do filme mostra a versão incrementada\n```",
+							"item": [
+								{
+									"name": "Dado que consulto a versão atual do filme",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Dado atendido: o filme existe e tem versão', () => pm.response.to.have.status(200));",
+													"pm.collectionVariables.set('versaoAntes', pm.response.json().version);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								},
+								{
+									"name": "Quando altero a descrição do filme",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a versão devolvida é a anterior mais 1', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAntes')) + 1);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o filme alterado",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a consulta do filme mostra a versão incrementada', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAntes')) + 1);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Repetir a mesma descrição não altera a versão",
+							"description": "```gherkin\nCenário: Repetir a mesma descrição não altera a versão\n  Dado que altero a descrição do filme\n  Quando envio novamente a mesma descrição\n  Então o status da resposta é 200\n  E a versão devolvida é a mesma\n  E a consulta do filme mostra a mesma versão e a mesma descrição\n```",
+							"item": [
+								{
+									"name": "Dado que altero a descrição do filme",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Dado atendido: a descrição foi alterada', () => pm.response.to.have.status(200));",
+													"pm.collectionVariables.set('versaoAtual', pm.response.json().version);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "Quando envio novamente a mesma descrição",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a versão devolvida é a mesma', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAtual')));",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o filme",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a consulta do filme mostra a mesma versão e a mesma descrição', () => {",
+													"    const film = pm.response.json();",
+													"    pm.expect(film.version).to.eql(Number(pm.collectionVariables.get('versaoAtual')));",
+													"    pm.expect(film.opening_crawl).to.eql(pm.collectionVariables.get('descricao'));",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Alterações sucessivas incrementam de um em um",
+							"description": "```gherkin\nCenário: Alterações sucessivas incrementam de um em um\n  Dado que consulto a versão atual do filme\n  Quando altero a descrição pela primeira vez\n  Então a versão devolvida é a anterior mais 1\n  Quando altero a descrição pela segunda vez com outro texto\n  Então a versão devolvida é a anterior mais 2\n  E a consulta do filme mostra a versão anterior mais 2\n```",
+							"item": [
+								{
+									"name": "Dado que consulto a versão atual do filme",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Dado atendido: o filme existe e tem versão', () => pm.response.to.have.status(200));",
+													"pm.collectionVariables.set('versaoAntes', pm.response.json().version);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								},
+								{
+									"name": "Quando altero a descrição pela primeira vez",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a versão devolvida é a anterior mais 1', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAntes')) + 1);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "Quando altero a descrição pela segunda vez com outro texto",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a versão devolvida é a anterior mais 2', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAntes')) + 2);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o filme alterado",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a consulta do filme mostra a versão anterior mais 2', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoAntes')) + 2);",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{filmId}}"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Alterar um filme não afeta a versão dos demais",
+							"description": "```gherkin\nCenário: Alterar um filme não afeta a versão dos demais\n  Dado que consulto a versão de outro filme\n  Quando altero a descrição do filme\n  Então o status da resposta é 200\n  E a versão do outro filme continua a mesma\n```",
+							"item": [
+								{
+									"name": "Dado que consulto a versão de outro filme",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Dado atendido: o outro filme existe', () => pm.response.to.have.status(200));",
+													"pm.collectionVariables.set('versaoOutroFilme', pm.response.json().version);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{otherFilmId}}"
+									}
+								},
+								{
+									"name": "Quando altero a descrição do filme",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"// descrição única a cada execução, para ser sempre uma alteração real",
+													"pm.collectionVariables.set('descricao', 'Descrição BDD ' + Date.now() + '-' + Math.floor(Math.random() * 100000));"
+												]
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"url": "{{baseUrl}}/api/films/{{filmId}}",
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"description\": \"{{descricao}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										}
+									}
+								},
+								{
+									"name": "E consulto o outro filme",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a versão do outro filme continua a mesma', () => {",
+													"    pm.expect(pm.response.json().version).to.eql(Number(pm.collectionVariables.get('versaoOutroFilme')));",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/api/films/{{otherFilmId}}"
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Funcionalidade: Documentação e saúde da aplicação",
+					"description": "Como responsável pela aplicação\nQuero que o contrato e os indicadores de saúde estejam disponíveis\nPara integrar e monitorar a API",
+					"item": [
+						{
+							"name": "Cenário: Contrato OpenAPI disponível",
+							"description": "```gherkin\nCenário: Contrato OpenAPI disponível\n  Quando consulto o contrato OpenAPI\n  Então o status da resposta é 200\n  E o contrato documenta os endpoints de filmes\n  E o contrato expõe a versão do filme nas respostas\n```",
+							"item": [
+								{
+									"name": "Quando consulto o contrato OpenAPI",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E o contrato documenta os endpoints de filmes', () => {",
+													"    const paths = pm.response.json().paths;",
+													"    pm.expect(paths).to.have.property('/api/films');",
+													"    pm.expect(paths).to.have.property('/api/films/{id}');",
+													"});",
+													"pm.test('E o contrato expõe a versão do filme nas respostas', () => {",
+													"    const schemas = pm.response.json().components.schemas;",
+													"    pm.expect(schemas.FilmResponse.properties).to.have.property('version');",
+													"    pm.expect(schemas.UpdateDescriptionResponse.properties).to.have.property('version');",
+													"});"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/v3/api-docs"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Swagger UI disponível",
+							"description": "```gherkin\nCenário: Swagger UI disponível\n  Quando abro o Swagger UI\n  Então o status da resposta é 200\n  E a página do Swagger UI é devolvida\n```",
+							"item": [
+								{
+									"name": "Quando abro o Swagger UI",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a página do Swagger UI é devolvida', () => pm.expect(pm.response.text()).to.include('Swagger UI'));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{baseUrl}}/swagger-ui/index.html"
+									}
+								}
+							]
+						},
+						{
+							"name": "Cenário: Aplicação saudável",
+							"description": "```gherkin\nCenário: Aplicação saudável\n  Quando consulto a saúde da aplicação\n  Então o status da resposta é 200\n  E a aplicação está UP\n```",
+							"item": [
+								{
+									"name": "Quando consulto a saúde da aplicação",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"type": "text/javascript",
+												"exec": [
+													"pm.test('Então o status da resposta é 200', () => pm.response.to.have.status(200));",
+													"pm.test('E a aplicação está UP', () => pm.expect(pm.response.json().status).to.eql('UP'));"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{actuatorUrl}}/health"
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

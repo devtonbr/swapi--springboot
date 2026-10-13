@@ -1,21 +1,9 @@
 package br.com.swapi.api;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import br.com.swapi.api.config.properties.SwApiProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-
-import br.com.swapi.api.model.constants.Constants;
-import br.com.swapi.api.model.exception.FilmException;
-import br.com.swapi.api.model.starwars.service.FilmService;
 
 
 /**
@@ -25,8 +13,7 @@ import br.com.swapi.api.model.starwars.service.FilmService;
  *
  */
 @SpringBootApplication
-@ComponentScan
-public class Application implements Constants {
+public class Application {
 
 	private static final Logger LOGGER = LogManager.getLogger(Application.class);
 	
