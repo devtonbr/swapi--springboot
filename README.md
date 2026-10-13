@@ -78,6 +78,16 @@ SPRING_PROFILES_ACTIVE : profiles do Spring (padrão: dev). Inclua jsonlog para 
 OTEL_EXPORTER_OTLP_TRACING_ENDPOINT : endpoint do coletor de tracing
 ```
 
+## Endpoints
+
+```
+GET /sw-springboot/api/films       : lista os filmes, com a versão de cada um
+GET /sw-springboot/api/films/{id}  : detalha um filme
+PUT /sw-springboot/api/films/{id}  : altera a descrição de um filme
+```
+
+O `{id}` é o número do episódio (`episode_id`), não o id do SWAPI: `/api/films/4` é "A New Hope" (episódio IV).
+
 ## Logs em formato json
 
 Com o profile `jsonlog` ativo, cada evento de log sai em uma linha json:

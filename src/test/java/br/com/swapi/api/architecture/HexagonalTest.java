@@ -38,7 +38,6 @@ class HexagonalTest {
             .that().haveSimpleNameEndingWith("DataSource")
             .should().dependOnClassesThat().haveSimpleNameEndingWith("DataSource");
 
-    // regras declaradas como metodo: o surefire ignora regras @ArchTest declaradas como campo
     @ArchTest
     static void layersValidator(JavaClasses classes) {
         LAYERS_VALIDATOR.check(classes);
