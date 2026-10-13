@@ -1,4 +1,4 @@
-# SWAPI - POC (EXEC)
+# SWAPI - POC (SPRINGBOOT)
 
 Projeto conceito para utilização de Serviço Rest com Spring Boot
 
