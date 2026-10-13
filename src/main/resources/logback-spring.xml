@@ -1,0 +1,23 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProfile name="jsonlog">
+        <!--
+            Um evento por linha. Os replace escapam barra invertida, aspas, quebra de linha e tabulação
+            (e removem os demais caracteres de controle) para a linha ser sempre um JSON válido.
+        -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSS}","service":"swapispringboot","level":"%p","trace":"%X{traceId:-}","span":"%X{spanId:-}","thread":"%replace(%replace(%thread){'\\','\\\\'}){'"','\\"'}","class":"%logger{40}","message":"%replace(%replace(%replace(%replace(%replace(%msg){'\\','\\\\'}){'"','\\"'}){'\r?\n','\\n'}){'\t','\\t'}){'\p{Cntrl}',''}","exception":"%replace(%replace(%replace(%replace(%replace(%ex){'\\','\\\\'}){'"','\\"'}){'\r?\n','\\n'}){'\t','\\t'}){'\p{Cntrl}',''}"}%nopex%n</pattern>
+            </encoder>
+        </appender>
+        <root level="info">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+    <springProfile name="!jsonlog">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+</configuration>
