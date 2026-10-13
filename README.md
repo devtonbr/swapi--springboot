@@ -74,9 +74,23 @@ A aplicação não usa config-server. A configuração é feita por variáveis d
 
 ```
 SWAPI_ENDPOINT : endpoint da api de filmes do StarWars (padrão: https://swapi.py4e.com/api/films/)
-SPRING_PROFILES_ACTIVE : profile do Spring (padrão: dev)
+SPRING_PROFILES_ACTIVE : profiles do Spring (padrão: dev). Inclua jsonlog para logs em formato json
 OTEL_EXPORTER_OTLP_TRACING_ENDPOINT : endpoint do coletor de tracing
 ```
+
+## Logs em formato json
+
+Com o profile `jsonlog` ativo, cada evento de log sai em uma linha json:
+
+```
+SPRING_PROFILES_ACTIVE=dev,jsonlog java -jar swapispringboot-0.0.1-SNAPSHOT.jar
+```
+
+```
+{"timestamp":"2026-10-13T17:42:20.752","service":"swapispringboot","level":"INFO","trace":"","span":"","thread":"main","class":"br.com.swapi.api.Application","message":"Iniciando o a Aplicação - SWAPI","exception":""}
+```
+
+Os campos `trace` e `span` são preenchidos durante o atendimento das requisições, e `exception` traz o stack trace quando houver. Sem o profile, o log sai no formato padrão do Spring Boot. A imagem Docker já sobe com `jsonlog`. A configuração está em `src/main/resources/logback-spring.xml`.
 
 ## Estado em memória
 

@@ -12,4 +12,7 @@ WORKDIR /app
 
 EXPOSE 5000 9090
 
+# logs em formato json (um evento por linha)
+ENV SPRING_PROFILES_ACTIVE=dev,jsonlog
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
