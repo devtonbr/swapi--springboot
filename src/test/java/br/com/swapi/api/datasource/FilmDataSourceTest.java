@@ -4,6 +4,7 @@ import br.com.swapi.api.datasource.store.FilmMemoryStore;
 import br.com.swapi.api.datasource.store.dto.FilmStoreDto;
 import br.com.swapi.api.datasource.store.dto.ReturnServiceStoreDto;
 import br.com.swapi.api.datasource.store.dto.ReturnServiceStoreDtoMock;
+import br.com.swapi.api.datasource.store.mapper.FilmStoreMapperImpl;
 import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.FilmMock;
 import br.com.swapi.api.entity.InputParameter;
@@ -14,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.UnaryOperator;
@@ -33,6 +35,9 @@ class FilmDataSourceTest {
 
     @Mock
     private FilmMemoryStore store;
+
+    @Spy
+    private FilmStoreMapperImpl filmStoreMapper;
 
     @Captor
     private ArgumentCaptor<ReturnServiceStoreDto> savedFilms;

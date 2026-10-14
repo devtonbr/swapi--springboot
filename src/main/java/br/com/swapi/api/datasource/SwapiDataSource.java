@@ -1,6 +1,5 @@
 package br.com.swapi.api.datasource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,11 +23,17 @@ import reactor.core.publisher.Mono;
 @Component
 public class SwapiDataSource implements SwapiRepository {
 
-	@Autowired
-	private WebClient webClient;
+	private final WebClient webClient;
 
-	@Autowired
-	private SwApiProperties swApiProperties;
+	private final SwApiProperties swApiProperties;
+
+	private final SwapiApiMapper swapiApiMapper;
+
+	public SwapiDataSource(WebClient webClient, SwApiProperties swApiProperties, SwapiApiMapper swapiApiMapper) {
+		this.webClient = webClient;
+		this.swApiProperties = swApiProperties;
+		this.swapiApiMapper = swapiApiMapper;
+	}
 
 	/**
 	 * Carrega a lista de filmes a partir da api do StarWars
@@ -48,7 +53,7 @@ public class SwapiDataSource implements SwapiRepository {
 						))
 				)
 				.bodyToMono(ReturnServiceDto.class);
-		return SwapiApiMapper.INSTANCE.map(responseService.block());
+		return swapiApiMapper.map(responseService.block());
 	}
 
 }

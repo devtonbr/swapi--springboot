@@ -12,12 +12,10 @@ import br.com.swapi.api.openapi.model.vo.UpdateDescriptionResponse;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface FilmsMapper {
-
-    FilmsMapper INSTANCE = Mappers.getMapper(FilmsMapper.class);
 
     ReturnServiceResponse map(ReturnService response);
 

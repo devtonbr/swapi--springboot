@@ -1,17 +1,26 @@
 package br.com.swapi.api.controller;
 
+import br.com.swapi.api.config.ExceptionHandler;
+import br.com.swapi.api.controller.mapper.FilmsMapperImpl;
 import br.com.swapi.api.entity.FilmMock;
 import br.com.swapi.api.entity.InputParameter;
 import br.com.swapi.api.entity.ReturnService;
 import br.com.swapi.api.exception.MemoryStoreException;
 import br.com.swapi.api.usecase.FilmUseCase;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static br.com.swapi.api.constants.Constants.NOT_FOUND_MESSAGE;
 import static br.com.swapi.api.constants.Constants.SUCCESS_MESSAGE;
@@ -26,16 +35,35 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(FilmsApiImpl.class)
+@ExtendWith(MockitoExtension.class)
 class FilmsApiImplTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @Mock
     private FilmUseCase filmsUseCase;
 
+    @Spy
+    private FilmsMapperImpl filmsMapper;
+
+    @InjectMocks
+    private FilmsApiImpl controller;
+
     private final ReturnService films = new FilmMock().listAllFilms();
+
+    @BeforeEach
+    void setup() {
+        // datas em formato ISO, como na configuração padrão do Spring Boot
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(
+                Jackson2ObjectMapperBuilder.json()
+                        .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                        .build());
+
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new ExceptionHandler())
+                .setMessageConverters(jsonConverter)
+                .build();
+    }
 
     @Test
     void listAllFilmsSuccess() throws Exception {
@@ -49,6 +77,8 @@ class FilmsApiImplTest {
                 .andExpect(jsonPath("$.results[0].version").value(1))
                 .andExpect(jsonPath("$.results[0].opening_crawl").value("Description test 1"))
                 .andExpect(jsonPath("$.results[0].release_date").value("2021-02-10"));
+
+        verify(filmsMapper).map(films);
     }
 
     @Test
@@ -61,6 +91,8 @@ class FilmsApiImplTest {
                 .andExpect(jsonPath("$.director").value("Director test 1"))
                 .andExpect(jsonPath("$.version").value(1))
                 .andExpect(jsonPath("$.characters[0]").value("characters 1"));
+
+        verify(filmsMapper).map(films.results().get(0));
     }
 
     @Test

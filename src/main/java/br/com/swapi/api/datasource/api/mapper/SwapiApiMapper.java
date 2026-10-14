@@ -7,12 +7,10 @@ import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.ReturnService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SwapiApiMapper {
-
-    SwapiApiMapper INSTANCE = Mappers.getMapper(SwapiApiMapper.class);
 
     ReturnService map(ReturnServiceDto dto);
 

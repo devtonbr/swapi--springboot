@@ -7,7 +7,6 @@ import br.com.swapi.api.openapi.model.vo.InputParameterRequest;
 import br.com.swapi.api.openapi.model.vo.UpdateDescriptionResponse;
 import br.com.swapi.api.openapi.model.vo.ReturnServiceResponse;
 import br.com.swapi.api.openapi.resources.FilmsApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,21 +17,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value="/")
 public class FilmsApiImpl implements FilmsApi {
 
-    @Autowired
-    private transient FilmUseCase filmsUseCase;
+    private final FilmUseCase filmsUseCase;
+
+    private final FilmsMapper filmsMapper;
+
+    public FilmsApiImpl(FilmUseCase filmsUseCase, FilmsMapper filmsMapper) {
+        this.filmsUseCase = filmsUseCase;
+        this.filmsMapper = filmsMapper;
+    }
 
     @Override
     public ResponseEntity<FilmResponse> findById(Integer id) {
-        return new ResponseEntity<FilmResponse>(FilmsMapper.INSTANCE.map(filmsUseCase.findById(id)),HttpStatus.OK);
+        return new ResponseEntity<FilmResponse>(filmsMapper.map(filmsUseCase.findById(id)),HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<ReturnServiceResponse> listAllFilms() {
-        return new ResponseEntity<ReturnServiceResponse>(FilmsMapper.INSTANCE.map(filmsUseCase.listAll()), HttpStatus.OK);
+        return new ResponseEntity<ReturnServiceResponse>(filmsMapper.map(filmsUseCase.listAll()), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<UpdateDescriptionResponse> updateDescription(Integer id, InputParameterRequest inputRequest) {
-        return new ResponseEntity<UpdateDescriptionResponse>(FilmsMapper.INSTANCE.mapUpdateDescription(filmsUseCase.updateDescription(id,FilmsMapper.INSTANCE.map(inputRequest))),HttpStatus.OK);
+        return new ResponseEntity<UpdateDescriptionResponse>(filmsMapper.mapUpdateDescription(filmsUseCase.updateDescription(id,filmsMapper.map(inputRequest))),HttpStatus.OK);
     }
 }

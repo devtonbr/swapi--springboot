@@ -1,6 +1,5 @@
 package br.com.swapi.api.datasource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.swapi.api.datasource.store.aspects.ReturnNullObject;
@@ -22,8 +21,14 @@ import br.com.swapi.api.repository.FilmRepository;
 @Component
 public class FilmDataSource implements FilmRepository {
 
-	@Autowired
-	private FilmMemoryStore store;
+	private final FilmMemoryStore store;
+
+	private final FilmStoreMapper filmStoreMapper;
+
+	public FilmDataSource(FilmMemoryStore store, FilmStoreMapper filmStoreMapper) {
+		this.store = store;
+		this.filmStoreMapper = filmStoreMapper;
+	}
 
 	/**
 	 * Guarda a lista de filmes
@@ -32,7 +37,7 @@ public class FilmDataSource implements FilmRepository {
 	 */
 	@Override
 	public void saveAll(final ReturnService films) {
-		store.load(FilmStoreMapper.INSTANCE.map(films));
+		store.load(filmStoreMapper.map(films));
 	}
 
 	/**
@@ -43,7 +48,7 @@ public class FilmDataSource implements FilmRepository {
 	@Override
 	@ReturnNullObject
     public ReturnService listAll() {
-    	  return FilmStoreMapper.INSTANCE.map(store.listAllFilms());
+    	  return filmStoreMapper.map(store.listAllFilms());
 	}
 
 
@@ -57,7 +62,7 @@ public class FilmDataSource implements FilmRepository {
 	@Override
 	@ReturnNullObject
 	public Film findById(final Integer id) {
-		return FilmStoreMapper.INSTANCE.map(store.getById(id));
+		return filmStoreMapper.map(store.getById(id));
 	}
 
 	/**
@@ -73,9 +78,9 @@ public class FilmDataSource implements FilmRepository {
 	@ReturnNullObject
 	public Film updateDescription(final Film film, final InputParameter inputParameter) {
 		// a regra da versão fica na entity; o store só aplica a alteração de forma atômica
-		return FilmStoreMapper.INSTANCE.map(store.update(film.id(), stored ->
-				FilmStoreMapper.INSTANCE.map(
-						FilmStoreMapper.INSTANCE.map(stored).updateDescription(inputParameter.description()))));
+		return filmStoreMapper.map(store.update(film.id(), stored ->
+				filmStoreMapper.map(
+						filmStoreMapper.map(stored).updateDescription(inputParameter.description()))));
 	}
 
 }
