@@ -53,7 +53,6 @@ class FilmsApiImplTest {
 
     @BeforeEach
     void setup() {
-        // datas em formato ISO, como na configuração padrão do Spring Boot
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(
                 Jackson2ObjectMapperBuilder.json()
                         .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
