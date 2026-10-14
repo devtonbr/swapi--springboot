@@ -1,8 +1,9 @@
-package br.com.swapi.api.datasource.aspects;
+package br.com.swapi.api.datasource.store.aspects;
 
+import br.com.swapi.api.datasource.store.aspects.ReturnStoreElement;
 import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.FilmMock;
-import br.com.swapi.api.exception.DaoException;
+import br.com.swapi.api.exception.MemoryStoreException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ReturnDaoElementTest {
+class ReturnStoreElementTest {
 
     @InjectMocks
-    private ReturnDaoElement aspect;
+    private ReturnStoreElement aspect;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
@@ -37,7 +38,7 @@ class ReturnDaoElementTest {
     void throwsDaoExceptionWhenNull() throws Throwable {
         when(joinPoint.proceed()).thenReturn(null);
 
-        DaoException exception = assertThrows(DaoException.class, () -> aspect.getNullReturn(joinPoint));
+        MemoryStoreException exception = assertThrows(MemoryStoreException.class, () -> aspect.getNullReturn(joinPoint));
         assertEquals(NOT_FOUND_MESSAGE, exception.getMessage());
     }
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.swapi.api.exception.DaoException;
+import br.com.swapi.api.exception.MemoryStoreException;
 import br.com.swapi.api.entity.Status;
 
 @ControllerAdvice
@@ -36,8 +36,8 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
      * @param request Objeto WebRequest
      * @return Objeto de Retorno
      */
-    @org.springframework.web.bind.annotation.ExceptionHandler(DaoException.class)
-    public final ResponseEntity<Status> handleNullDaoException(DaoException exception, WebRequest request) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(MemoryStoreException.class)
+    public final ResponseEntity<Status> handleNullDaoException(MemoryStoreException exception, WebRequest request) {
     	Status error = new Status(exception.getMessage());
     	LOGGER.error(exception.getMessage());
         return new ResponseEntity<Status>(error,HttpStatus.NOT_FOUND);

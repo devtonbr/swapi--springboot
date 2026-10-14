@@ -3,7 +3,7 @@ package br.com.swapi.api.datasource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.swapi.api.datasource.aspects.ReturnNullObject;
+import br.com.swapi.api.datasource.store.aspects.ReturnNullObject;
 import br.com.swapi.api.datasource.store.FilmMemoryStore;
 import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.InputParameter;

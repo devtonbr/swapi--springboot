@@ -4,7 +4,7 @@ import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.FilmMock;
 import br.com.swapi.api.entity.InputParameter;
 import br.com.swapi.api.entity.ReturnService;
-import br.com.swapi.api.exception.DaoException;
+import br.com.swapi.api.exception.MemoryStoreException;
 import br.com.swapi.api.repository.FilmRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,9 +49,9 @@ class FilmUseCaseTest {
 
     @Test
     void findByIdFail() {
-        when(filmRepository.findById(99)).thenThrow(new DaoException(NOT_FOUND_MESSAGE));
+        when(filmRepository.findById(99)).thenThrow(new MemoryStoreException(NOT_FOUND_MESSAGE));
 
-        assertThrows(DaoException.class, () -> useCase.findById(99));
+        assertThrows(MemoryStoreException.class, () -> useCase.findById(99));
     }
 
     @Test
@@ -69,9 +69,9 @@ class FilmUseCaseTest {
 
     @Test
     void updateDescriptionFilmNotFound() {
-        when(filmRepository.findById(99)).thenThrow(new DaoException(NOT_FOUND_MESSAGE));
+        when(filmRepository.findById(99)).thenThrow(new MemoryStoreException(NOT_FOUND_MESSAGE));
 
-        assertThrows(DaoException.class, () -> useCase.updateDescription(99, new InputParameter(null)));
+        assertThrows(MemoryStoreException.class, () -> useCase.updateDescription(99, new InputParameter(null)));
         verify(filmRepository, never()).updateDescription(any(), any());
     }
 

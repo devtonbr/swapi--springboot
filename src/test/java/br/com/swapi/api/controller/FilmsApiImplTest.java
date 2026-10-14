@@ -3,7 +3,7 @@ package br.com.swapi.api.controller;
 import br.com.swapi.api.entity.FilmMock;
 import br.com.swapi.api.entity.InputParameter;
 import br.com.swapi.api.entity.ReturnService;
-import br.com.swapi.api.exception.DaoException;
+import br.com.swapi.api.exception.MemoryStoreException;
 import br.com.swapi.api.usecase.FilmUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -65,7 +65,7 @@ class FilmsApiImplTest {
 
     @Test
     void findByIdNotFound() throws Exception {
-        when(filmsUseCase.findById(99)).thenThrow(new DaoException(NOT_FOUND_MESSAGE));
+        when(filmsUseCase.findById(99)).thenThrow(new MemoryStoreException(NOT_FOUND_MESSAGE));
 
         mockMvc.perform(get("/api/films/99"))
                 .andExpect(status().isNotFound())

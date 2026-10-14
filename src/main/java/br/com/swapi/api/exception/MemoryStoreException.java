@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class DaoException extends RuntimeException {
+public class MemoryStoreException extends RuntimeException {
 
 	/**
 	 * Serial id
@@ -16,7 +16,7 @@ public class DaoException extends RuntimeException {
 	 * 
 	 * @param message Mensagem
 	 */
-	public DaoException(String message) {
+	public MemoryStoreException(String message) {
 		super(message);
 	}
 	

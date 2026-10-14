@@ -1,4 +1,4 @@
-package br.com.swapi.api.datasource.aspects;
+package br.com.swapi.api.datasource.store.aspects;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
