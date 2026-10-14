@@ -34,7 +34,6 @@ class FilmDataSourceTest {
         FilmDataSource dataSource = new FilmDataSource();
         ReflectionTestUtils.setField(dataSource, "store", store);
 
-        // aplica o aspecto do @ReturnNullObject, como no contexto do Spring
         AspectJProxyFactory factory = new AspectJProxyFactory(dataSource);
         factory.addAspect(new ReturnDaoElement());
         repository = factory.getProxy();
@@ -66,8 +65,8 @@ class FilmDataSourceTest {
     void findByIdSuccess() {
         Film ret = repository.findById(1);
 
-        assertEquals(1, ret.getId());
-        assertEquals("Director test 1", ret.getDirector());
+        assertEquals(1, ret.id());
+        assertEquals("Director test 1", ret.director());
     }
 
     @Test
@@ -84,46 +83,43 @@ class FilmDataSourceTest {
 
     @Test
     void updateDescriptionSuccess() {
-        InputParameter input = new InputParameter();
-        input.setDescription("nova descriçao");
+        InputParameter input = new InputParameter("nova descriçao");
 
         Film ret = repository.updateDescription(repository.findById(1), input);
 
-        assertEquals(2, ret.getVersion());
+        assertEquals(2, ret.version());
         Film updated = repository.findById(1);
-        assertEquals(1, updated.getId());
-        assertEquals("nova descriçao", updated.getOpeningCrawl());
-        assertEquals(2, updated.getVersion());
+        assertEquals(1, updated.id());
+        assertEquals("nova descriçao", updated.openingCrawl());
+        assertEquals(2, updated.version());
     }
 
     @Test
     void updateDescriptionKeepsOtherFilms() {
-        InputParameter input = new InputParameter();
-        input.setDescription("nova descriçao");
+        InputParameter input = new InputParameter("nova descriçao");
 
         repository.updateDescription(repository.findById(1), input);
 
         Film other = repository.findById(2);
-        assertEquals("Description test 2", other.getOpeningCrawl());
-        assertEquals(1, other.getVersion());
+        assertEquals("Description test 2", other.openingCrawl());
+        assertEquals(1, other.version());
     }
 
     @Test
     void updateWithSameDescriptionKeepsVersion() {
-        InputParameter input = new InputParameter();
-        input.setDescription("Description test 1");
+        InputParameter input = new InputParameter("Description test 1");
 
         Film ret = repository.updateDescription(repository.findById(1), input);
 
-        assertEquals(1, ret.getVersion());
-        assertEquals(1, repository.findById(1).getVersion());
+        assertEquals(1, ret.version());
+        assertEquals(1, repository.findById(1).version());
     }
 
     @Test
     void updateDescriptionFilmNotFound() {
         Film unknown = new Film("", 99, "", "", "", "", null, null, null, null, null, "", "", "");
 
-        assertThrows(DaoException.class, () -> repository.updateDescription(unknown, new InputParameter()));
+        assertThrows(DaoException.class, () -> repository.updateDescription(unknown, new InputParameter(null)));
     }
 
 }

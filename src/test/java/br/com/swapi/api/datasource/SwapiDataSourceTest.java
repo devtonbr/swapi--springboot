@@ -73,14 +73,14 @@ class SwapiDataSourceTest {
 
         ReturnService ret = dataSource.loadAll();
 
-        assertEquals("2", ret.getCount());
-        assertEquals(2, ret.getResults().size());
-        Film film = ret.getResults().get(0);
-        assertEquals(1, film.getId());
-        assertEquals("Title test 1", film.getTitle());
-        assertEquals("Description test 1", film.getOpeningCrawl());
-        assertEquals("2021-02-10", film.getReleaseDate());
-        assertEquals(1, film.getVersion());
+        assertEquals("2", ret.count());
+        assertEquals(2, ret.results().size());
+        Film film = ret.results().get(0);
+        assertEquals(1, film.id());
+        assertEquals("Title test 1", film.title());
+        assertEquals("Description test 1", film.openingCrawl());
+        assertEquals("2021-02-10", film.releaseDate());
+        assertEquals(1, film.version());
     }
 
     @Test

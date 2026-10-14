@@ -41,7 +41,7 @@ class FilmUseCaseTest {
 
     @Test
     void findByIdSuccess() {
-        Film film = films.getResults().get(0);
+        Film film = films.results().get(0);
         when(filmRepository.findById(1)).thenReturn(film);
 
         assertSame(film, useCase.findById(1));
@@ -56,15 +56,14 @@ class FilmUseCaseTest {
 
     @Test
     void updateDescriptionSuccess() {
-        Film film = films.getResults().get(0);
-        InputParameter input = new InputParameter();
-        input.setDescription("nova descriçao");
+        Film film = films.results().get(0);
+        InputParameter input = new InputParameter("nova descriçao");
         when(filmRepository.findById(1)).thenReturn(film);
-        when(filmRepository.updateDescription(film, input)).thenReturn(film.updateDescription(input.getDescription()));
+        when(filmRepository.updateDescription(film, input)).thenReturn(film.updateDescription(input.description()));
 
         Film ret = useCase.updateDescription(1, input);
 
-        assertEquals(2, ret.getVersion());
+        assertEquals(2, ret.version());
         verify(filmRepository).updateDescription(film, input);
     }
 
@@ -72,7 +71,7 @@ class FilmUseCaseTest {
     void updateDescriptionFilmNotFound() {
         when(filmRepository.findById(99)).thenThrow(new DaoException(NOT_FOUND_MESSAGE));
 
-        assertThrows(DaoException.class, () -> useCase.updateDescription(99, new InputParameter()));
+        assertThrows(DaoException.class, () -> useCase.updateDescription(99, new InputParameter(null)));
         verify(filmRepository, never()).updateDescription(any(), any());
     }
 

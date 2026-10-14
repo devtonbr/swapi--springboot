@@ -53,7 +53,7 @@ class FilmsApiImplTest {
 
     @Test
     void findByIdSuccess() throws Exception {
-        when(filmsUseCase.findById(1)).thenReturn(films.getResults().get(0));
+        when(filmsUseCase.findById(1)).thenReturn(films.results().get(0));
 
         mockMvc.perform(get("/api/films/1"))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ class FilmsApiImplTest {
     @Test
     void updateDescriptionSuccess() throws Exception {
         when(filmsUseCase.updateDescription(eq(1), any(InputParameter.class)))
-                .thenReturn(films.getResults().get(0).updateDescription("nova descricao"));
+                .thenReturn(films.results().get(0).updateDescription("nova descricao"));
 
         mockMvc.perform(put("/api/films/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +95,7 @@ class FilmsApiImplTest {
 
         ArgumentCaptor<InputParameter> input = ArgumentCaptor.forClass(InputParameter.class);
         verify(filmsUseCase).updateDescription(eq(1), input.capture());
-        assertEquals("nova descricao", input.getValue().getDescription());
+        assertEquals("nova descricao", input.getValue().description());
     }
 
     @Test

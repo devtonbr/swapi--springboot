@@ -38,7 +38,7 @@ class FilmMemoryStoreTest {
         assertNull(empty.listAllFilms());
         assertNull(empty.getById(1));
 
-        assertNull(empty.updateDescription(films.getResults().get(0), input("nova")));
+        assertNull(empty.updateDescription(films.results().get(0), input("nova")));
         assertNull(empty.listAllFilms());
     }
 
@@ -49,7 +49,7 @@ class FilmMemoryStoreTest {
 
     @Test
     void getById() {
-        assertEquals("Director test 1", store.getById(1).getDirector());
+        assertEquals("Director test 1", store.getById(1).director());
         assertNull(store.getById(99));
     }
 
@@ -62,16 +62,16 @@ class FilmMemoryStoreTest {
         Film updated = store.getById(1);
         assertSame(updated, returned);
         assertNotSame(original, updated);
-        assertEquals("nova", updated.getOpeningCrawl());
-        assertEquals(2, updated.getVersion());
-        assertEquals("Director test 1", updated.getDirector());
+        assertEquals("nova", updated.openingCrawl());
+        assertEquals(2, updated.version());
+        assertEquals("Director test 1", updated.director());
 
         // o objeto e a lista anteriores não são alterados
-        assertEquals("Description test 1", original.getOpeningCrawl());
-        assertEquals(1, original.getVersion());
+        assertEquals("Description test 1", original.openingCrawl());
+        assertEquals(1, original.version());
         assertNotSame(films, store.listAllFilms());
-        assertEquals("3", store.listAllFilms().getCount());
-        assertEquals(3, store.listAllFilms().getResults().size());
+        assertEquals("3", store.listAllFilms().count());
+        assertEquals(3, store.listAllFilms().results().size());
     }
 
     @Test
@@ -81,7 +81,7 @@ class FilmMemoryStoreTest {
         Film returned = store.updateDescription(original, input("Description test 1"));
 
         assertSame(original, returned);
-        assertEquals(1, store.getById(1).getVersion());
+        assertEquals(1, store.getById(1).version());
         assertSame(films, store.listAllFilms());
     }
 
@@ -89,9 +89,9 @@ class FilmMemoryStoreTest {
     void repeatedUpdateIncrementsOnlyOnce() {
         Film original = store.getById(1);
 
-        assertEquals(2, store.updateDescription(original, input("nova")).getVersion());
-        assertEquals(2, store.updateDescription(original, input("nova")).getVersion());
-        assertEquals(3, store.updateDescription(original, input("outra")).getVersion());
+        assertEquals(2, store.updateDescription(original, input("nova")).version());
+        assertEquals(2, store.updateDescription(original, input("nova")).version());
+        assertEquals(3, store.updateDescription(original, input("outra")).version());
     }
 
     @Test
@@ -129,12 +129,11 @@ class FilmMemoryStoreTest {
         assertTrue(done.await(30, TimeUnit.SECONDS));
         executor.shutdown();
 
-        assertEquals(1 + threads * updatesPerThread, store.getById(1).getVersion());
+        assertEquals(1 + threads * updatesPerThread, store.getById(1).version());
     }
 
     private InputParameter input(String description) {
-        InputParameter input = new InputParameter();
-        input.setDescription(description);
+        InputParameter input = new InputParameter(description);
         return input;
     }
 

@@ -18,6 +18,8 @@ public interface SwapiApiMapper {
 
     @Mapping(target = "id", source = "episodeId")
     @Mapping(target = "updateDescription", ignore = true)
+    // a api não informa versão: o filme é criado na versão inicial
+    @Mapping(target = "version", ignore = true)
     Film map(FilmDto dto);
 
 }

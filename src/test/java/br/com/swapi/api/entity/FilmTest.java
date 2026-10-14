@@ -13,12 +13,27 @@ class FilmTest {
 
     @BeforeEach
     void init() {
-        film = new FilmMock().listAllFilms().getResults().get(0);
+        film = new FilmMock().listAllFilms().results().get(0);
     }
 
     @Test
     void newFilmStartsAtVersionOne() {
-        assertEquals(1, film.getVersion());
+        assertEquals(1, film.version());
+    }
+
+    @Test
+    void filmWithoutVersionStartsAtVersionOne() {
+        Film semVersao = new Film("", 1, "", "", "", "", null, null, null, null, null, "", "", "", null);
+
+        assertEquals(1, semVersao.version());
+    }
+
+    @Test
+    void filmKeepsTheGivenVersion() {
+        Film versaoCinco = new Film("", 1, "", "", "", "", null, null, null, null, null, "", "", "", 5);
+
+        assertEquals(5, versaoCinco.version());
+        assertEquals(6, versaoCinco.updateDescription("nova").version());
     }
 
     @Test
@@ -26,27 +41,27 @@ class FilmTest {
         Film updated = film.updateDescription("nova descriçao");
 
         assertNotSame(film, updated);
-        assertEquals("nova descriçao", updated.getOpeningCrawl());
-        assertEquals(2, updated.getVersion());
+        assertEquals("nova descriçao", updated.openingCrawl());
+        assertEquals(2, updated.version());
 
         // os demais campos são preservados
-        assertEquals(film.getId(), updated.getId());
-        assertEquals(film.getTitle(), updated.getTitle());
-        assertEquals(film.getDirector(), updated.getDirector());
-        assertEquals(film.getProducer(), updated.getProducer());
-        assertEquals(film.getReleaseDate(), updated.getReleaseDate());
-        assertEquals(film.getCharacters(), updated.getCharacters());
-        assertEquals(film.getPlanets(), updated.getPlanets());
-        assertEquals(film.getStarships(), updated.getStarships());
-        assertEquals(film.getVehicles(), updated.getVehicles());
-        assertEquals(film.getSpecies(), updated.getSpecies());
-        assertEquals(film.getCreated(), updated.getCreated());
-        assertEquals(film.getEdited(), updated.getEdited());
-        assertEquals(film.getUrl(), updated.getUrl());
+        assertEquals(film.id(), updated.id());
+        assertEquals(film.title(), updated.title());
+        assertEquals(film.director(), updated.director());
+        assertEquals(film.producer(), updated.producer());
+        assertEquals(film.releaseDate(), updated.releaseDate());
+        assertEquals(film.characters(), updated.characters());
+        assertEquals(film.planets(), updated.planets());
+        assertEquals(film.starships(), updated.starships());
+        assertEquals(film.vehicles(), updated.vehicles());
+        assertEquals(film.species(), updated.species());
+        assertEquals(film.created(), updated.created());
+        assertEquals(film.edited(), updated.edited());
+        assertEquals(film.url(), updated.url());
 
         // o objeto original não é alterado
-        assertEquals("Description test 1", film.getOpeningCrawl());
-        assertEquals(1, film.getVersion());
+        assertEquals("Description test 1", film.openingCrawl());
+        assertEquals(1, film.version());
     }
 
     @Test
@@ -54,7 +69,7 @@ class FilmTest {
         Film updated = film.updateDescription("Description test 1");
 
         assertSame(film, updated);
-        assertEquals(1, updated.getVersion());
+        assertEquals(1, updated.version());
     }
 
     @Test
@@ -64,11 +79,11 @@ class FilmTest {
         Film sameAsThird = third.updateDescription("descriçao 3");
         Film fourth = third.updateDescription("Description test 1");
 
-        assertEquals(2, second.getVersion());
-        assertEquals(3, third.getVersion());
+        assertEquals(2, second.version());
+        assertEquals(3, third.version());
         assertSame(third, sameAsThird);
         // voltar ao texto original também é uma alteração
-        assertEquals(4, fourth.getVersion());
+        assertEquals(4, fourth.version());
     }
 
 }

@@ -5,18 +5,16 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import br.com.swapi.api.exception.DaoException;
-import br.com.swapi.api.entity.ObjectRsp;
-import br.com.swapi.api.entity.statics.InternalServerError;
+import br.com.swapi.api.entity.Status;
 
 @ControllerAdvice
-public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {
+public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
-	private static final Logger LOGGER = LogManager.getLogger(ReturnDaoExceptionHandler.class);
+	private static final Logger LOGGER = LogManager.getLogger(ExceptionHandler.class);
 	
     /**
      * Retorna as mensagens de erro inesperados
@@ -25,10 +23,10 @@ public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {
      * @param request Objeto WebRequest
      * @return Objeto de Retorno
      */	
-	@ExceptionHandler(Exception.class)
-    public final ResponseEntity<ObjectRsp> handleAllExceptions(Exception exception, WebRequest request) {
+	@org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    public final ResponseEntity<Status> handleAllExceptions(Exception exception, WebRequest request) {
 		 LOGGER.error("Erro ao executar a api: "+exception.getMessage(), exception);
-	     return new ResponseEntity<ObjectRsp>(new InternalServerError(), HttpStatus.INTERNAL_SERVER_ERROR);
+	     return new ResponseEntity<Status>(new Status("Erro interno no Servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
  
     /**
@@ -38,11 +36,11 @@ public class ReturnDaoExceptionHandler extends ResponseEntityExceptionHandler {
      * @param request Objeto WebRequest
      * @return Objeto de Retorno
      */
-    @ExceptionHandler(DaoException.class)
-    public final ResponseEntity<ObjectRsp> handleNullDaoException(DaoException exception, WebRequest request) {
-    	ObjectRsp error = new ObjectRsp(exception.getMessage());
+    @org.springframework.web.bind.annotation.ExceptionHandler(DaoException.class)
+    public final ResponseEntity<Status> handleNullDaoException(DaoException exception, WebRequest request) {
+    	Status error = new Status(exception.getMessage());
     	LOGGER.error(exception.getMessage());
-        return new ResponseEntity<ObjectRsp>(error,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<Status>(error,HttpStatus.NOT_FOUND);
     }
 	
 }

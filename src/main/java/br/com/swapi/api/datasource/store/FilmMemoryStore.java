@@ -62,22 +62,22 @@ public class FilmMemoryStore {
 			if (current == null) {
 				return null;
 			}
-			List<Film> nwFilms = current.getResults().stream().map(
-					item -> item.getId().equals(film.getId()) ? item.updateDescription(input.getDescription()) : item
+			List<Film> nwFilms = current.results().stream().map(
+					item -> item.id().equals(film.id()) ? item.updateDescription(input.description()) : item
 			).collect(Collectors.toList());
-			if (nwFilms.equals(current.getResults())) {
+			if (nwFilms.equals(current.results())) {
 				return current;
 			}
-			return new ReturnService(current.getCount(), current.getNext(), current.getPrevious(), nwFilms);
+			return new ReturnService(current.count(), current.next(), current.previous(), nwFilms);
 		});
-		return getById(updated, film.getId());
+		return getById(updated, film.id());
 	}
 
 	private Film getById(ReturnService current, Integer id) {
 		if (current == null) {
 			return null;
 		}
-		return current.getResults().stream().filter(item -> item.getId().equals(id)).findAny()
+		return current.results().stream().filter(item -> item.id().equals(id)).findAny()
 				  .orElse(null);
 	}
 
