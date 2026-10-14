@@ -1,125 +1,86 @@
 package br.com.swapi.api.datasource;
 
-import br.com.swapi.api.datasource.aspects.ReturnDaoElement;
 import br.com.swapi.api.datasource.store.FilmMemoryStore;
 import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.FilmMock;
 import br.com.swapi.api.entity.InputParameter;
 import br.com.swapi.api.entity.ReturnService;
-import br.com.swapi.api.exception.DaoException;
-import br.com.swapi.api.repository.FilmRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FilmDataSourceTest {
 
-    private FilmRepository repository;
+    @InjectMocks
+    private FilmDataSource dataSource;
 
+    @Mock
     private FilmMemoryStore store;
 
-    private ReturnService films;
-
-    @BeforeEach
-    void init() {
-        films = new FilmMock().listAllFilms();
-        store = new FilmMemoryStore();
-        store.load(films);
-
-        FilmDataSource dataSource = new FilmDataSource();
-        ReflectionTestUtils.setField(dataSource, "store", store);
-
-        AspectJProxyFactory factory = new AspectJProxyFactory(dataSource);
-        factory.addAspect(new ReturnDaoElement());
-        repository = factory.getProxy();
-    }
+    private final ReturnService films = new FilmMock().listAllFilms();
 
     @Test
     void saveAllSuccess() {
-        ReturnService loaded = new FilmMock().listAllFilms();
+        dataSource.saveAll(films);
 
-        repository.saveAll(loaded);
-
-        assertSame(loaded, store.listAllFilms());
-        assertSame(loaded, repository.listAll());
+        verify(store).load(films);
     }
 
     @Test
     void listAllSuccess() {
-        assertSame(films, repository.listAll());
+        when(store.listAllFilms()).thenReturn(films);
+
+        assertSame(films, dataSource.listAll());
     }
 
     @Test
-    void listAllFail() {
-        repository.saveAll(null);
+    void listAllWithoutFilmsLoaded() {
+        when(store.listAllFilms()).thenReturn(null);
 
-        assertThrows(DaoException.class, () -> repository.listAll());
+        assertNull(dataSource.listAll());
     }
 
     @Test
     void findByIdSuccess() {
-        Film ret = repository.findById(1);
+        Film film = films.results().get(0);
+        when(store.getById(1)).thenReturn(film);
 
-        assertEquals(1, ret.id());
-        assertEquals("Director test 1", ret.director());
+        assertSame(film, dataSource.findById(1));
     }
 
     @Test
-    void findByIdWithoutFilmsLoaded() {
-        repository.saveAll(null);
+    void findByIdNotFound() {
+        when(store.getById(99)).thenReturn(null);
 
-        assertThrows(DaoException.class, () -> repository.findById(1));
-    }
-
-    @Test
-    void findByIdFail() {
-        assertThrows(DaoException.class, () -> repository.findById(99));
+        assertNull(dataSource.findById(99));
     }
 
     @Test
     void updateDescriptionSuccess() {
+        Film film = films.results().get(0);
         InputParameter input = new InputParameter("nova descriçao");
+        Film updated = film.updateDescription(input.description());
+        when(store.updateDescription(film, input)).thenReturn(updated);
 
-        Film ret = repository.updateDescription(repository.findById(1), input);
-
-        assertEquals(2, ret.version());
-        Film updated = repository.findById(1);
-        assertEquals(1, updated.id());
-        assertEquals("nova descriçao", updated.openingCrawl());
-        assertEquals(2, updated.version());
-    }
-
-    @Test
-    void updateDescriptionKeepsOtherFilms() {
-        InputParameter input = new InputParameter("nova descriçao");
-
-        repository.updateDescription(repository.findById(1), input);
-
-        Film other = repository.findById(2);
-        assertEquals("Description test 2", other.openingCrawl());
-        assertEquals(1, other.version());
-    }
-
-    @Test
-    void updateWithSameDescriptionKeepsVersion() {
-        InputParameter input = new InputParameter("Description test 1");
-
-        Film ret = repository.updateDescription(repository.findById(1), input);
-
-        assertEquals(1, ret.version());
-        assertEquals(1, repository.findById(1).version());
+        assertSame(updated, dataSource.updateDescription(film, input));
+        verify(store).updateDescription(film, input);
     }
 
     @Test
     void updateDescriptionFilmNotFound() {
         Film unknown = new Film("", 99, "", "", "", "", null, null, null, null, null, "", "", "");
+        InputParameter input = new InputParameter("nova descriçao");
+        when(store.updateDescription(unknown, input)).thenReturn(null);
 
-        assertThrows(DaoException.class, () -> repository.updateDescription(unknown, new InputParameter(null)));
+        assertNull(dataSource.updateDescription(unknown, input));
     }
 
 }

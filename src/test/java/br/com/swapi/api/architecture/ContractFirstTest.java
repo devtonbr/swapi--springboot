@@ -19,7 +19,6 @@ class ContractFirstTest {
             .should().implement(JavaClass.Predicates.resideInAPackage("..openapi.resources.."))
             .as("Os controllers devem implementar as interfaces geradas do contrato (..openapi.resources..)");
 
-    // regras declaradas como metodo: o surefire ignora regras @ArchTest declaradas como campo
     @ArchTest
     static void implementsValidator(JavaClasses classes) {
         IMPLEMENTS_VALIDATOR.check(classes);

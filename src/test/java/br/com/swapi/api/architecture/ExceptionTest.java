@@ -16,7 +16,6 @@ class ExceptionTest {
             .that().resideOutsideOfPackage("..openapi..")
             .should(GeneralCodingRules.THROW_GENERIC_EXCEPTIONS);
 
-    // regras declaradas como metodo: o surefire ignora regras @ArchTest declaradas como campo
     @ArchTest
     static void noThrowsGenericException(JavaClasses classes) {
         NO_THROWS_GENERIC_EXCEPTION.check(classes);
