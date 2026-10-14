@@ -1,9 +1,8 @@
 package br.com.swapi.api.datasource.store;
 
-import br.com.swapi.api.entity.Film;
-import br.com.swapi.api.entity.FilmMock;
-import br.com.swapi.api.entity.InputParameter;
-import br.com.swapi.api.entity.ReturnService;
+import br.com.swapi.api.datasource.store.dto.FilmStoreDto;
+import br.com.swapi.api.datasource.store.dto.ReturnServiceStoreDto;
+import br.com.swapi.api.datasource.store.dto.ReturnServiceStoreDtoMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -22,11 +22,11 @@ class FilmMemoryStoreTest {
 
     private FilmMemoryStore store;
 
-    private ReturnService films;
+    private ReturnServiceStoreDto films;
 
     @BeforeEach
     void init() {
-        films = new FilmMock().listAllFilms();
+        films = new ReturnServiceStoreDtoMock().listAllFilms();
         store = new FilmMemoryStore();
         store.load(films);
     }
@@ -38,7 +38,7 @@ class FilmMemoryStoreTest {
         assertNull(empty.listAllFilms());
         assertNull(empty.getById(1));
 
-        assertNull(empty.updateDescription(films.results().get(0), input("nova")));
+        assertNull(empty.update(1, withDescription("nova")));
         assertNull(empty.listAllFilms());
     }
 
@@ -54,12 +54,12 @@ class FilmMemoryStoreTest {
     }
 
     @Test
-    void updateDescriptionCreatesNewVersion() {
-        Film original = store.getById(1);
+    void updateReplacesTheFilm() {
+        FilmStoreDto original = store.getById(1);
 
-        Film returned = store.updateDescription(original, input("nova"));
+        FilmStoreDto returned = store.update(1, withDescription("nova"));
 
-        Film updated = store.getById(1);
+        FilmStoreDto updated = store.getById(1);
         assertSame(updated, returned);
         assertNotSame(original, updated);
         assertEquals("nova", updated.openingCrawl());
@@ -75,30 +75,27 @@ class FilmMemoryStoreTest {
     }
 
     @Test
-    void updateWithSameDescriptionKeepsVersion() {
-        Film original = store.getById(1);
+    void updateKeepsOtherFilms() {
+        FilmStoreDto other = store.getById(2);
 
-        Film returned = store.updateDescription(original, input("Description test 1"));
+        store.update(1, withDescription("nova"));
+
+        assertSame(other, store.getById(2));
+    }
+
+    @Test
+    void updateWithoutChangeKeepsTheList() {
+        FilmStoreDto original = store.getById(1);
+
+        FilmStoreDto returned = store.update(1, UnaryOperator.identity());
 
         assertSame(original, returned);
-        assertEquals(1, store.getById(1).version());
         assertSame(films, store.listAllFilms());
     }
 
     @Test
-    void repeatedUpdateIncrementsOnlyOnce() {
-        Film original = store.getById(1);
-
-        assertEquals(2, store.updateDescription(original, input("nova")).version());
-        assertEquals(2, store.updateDescription(original, input("nova")).version());
-        assertEquals(3, store.updateDescription(original, input("outra")).version());
-    }
-
-    @Test
     void updateUnknownFilmReturnsNull() {
-        Film unknown = new Film("", 99, "", "", "", "", null, null, null, null, null, "", "", "");
-
-        assertNull(store.updateDescription(unknown, input("nova")));
+        assertNull(store.update(99, withDescription("nova")));
         assertSame(films, store.listAllFilms());
     }
 
@@ -106,7 +103,6 @@ class FilmMemoryStoreTest {
     void concurrentUpdatesAreNotLost() throws Exception {
         int threads = 8;
         int updatesPerThread = 50;
-        Film film = store.getById(1);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch done = new CountDownLatch(threads);
@@ -116,7 +112,7 @@ class FilmMemoryStoreTest {
                 try {
                     start.await();
                     for (int i = 0; i < updatesPerThread; i++) {
-                        store.updateDescription(film, input(Thread.currentThread().getName() + "-" + i));
+                        store.update(1, withDescription(Thread.currentThread().getName() + "-" + i));
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -132,9 +128,13 @@ class FilmMemoryStoreTest {
         assertEquals(1 + threads * updatesPerThread, store.getById(1).version());
     }
 
-    private InputParameter input(String description) {
-        InputParameter input = new InputParameter(description);
-        return input;
+    /**
+     * Alteração que troca a descrição e incrementa a versão
+     */
+    private UnaryOperator<FilmStoreDto> withDescription(String description) {
+        return film -> new FilmStoreDto(film.title(), film.id(), description, film.director(), film.producer(),
+                film.releaseDate(), film.characters(), film.planets(), film.starships(), film.vehicles(),
+                film.species(), film.created(), film.edited(), film.url(), film.version() + 1);
     }
 
 }

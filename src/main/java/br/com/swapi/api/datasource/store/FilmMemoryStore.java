@@ -2,13 +2,13 @@ package br.com.swapi.api.datasource.store;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import br.com.swapi.api.entity.Film;
-import br.com.swapi.api.entity.InputParameter;
-import br.com.swapi.api.entity.ReturnService;
+import br.com.swapi.api.datasource.store.dto.FilmStoreDto;
+import br.com.swapi.api.datasource.store.dto.ReturnServiceStoreDto;
 
 /**
  * Armazena os filmes em memória
@@ -19,13 +19,13 @@ import br.com.swapi.api.entity.ReturnService;
 @Component
 public class FilmMemoryStore {
 
-	private final AtomicReference<ReturnService> films = new AtomicReference<>();
+	private final AtomicReference<ReturnServiceStoreDto> films = new AtomicReference<>();
 
 	/**
 	 * Carrega a lista de filmes
 	 * @param returnService Lista de filmes
 	 */
-	public void load(ReturnService returnService) {
+	public void load(ReturnServiceStoreDto returnService) {
 		films.set(returnService);
 	}
 
@@ -33,7 +33,7 @@ public class FilmMemoryStore {
 	 * Lista todos os filmes
 	 * @return Lista de filmes
 	 */
-	public ReturnService listAllFilms(){
+	public ReturnServiceStoreDto listAllFilms(){
 		return films.get();
 	}
 
@@ -42,38 +42,38 @@ public class FilmMemoryStore {
 	 * @param id Id A ser Consultado
 	 * @return Objeto Filme
 	 */
-	public Film getById(Integer id) {
+	public FilmStoreDto getById(Integer id) {
 		return getById(films.get(), id);
 	}
 
 	/**
-	 * Altera a descrição do filme e Atualiza a versão
+	 * Altera o filme de forma atômica
 	 *
-	 * A versão só é incrementada quando a descrição muda
+	 * A alteração pode ser reaplicada em caso de concorrência, por isso não deve ter efeitos colaterais
 	 *
-	 * @param film Objeto film
+	 * @param id Id do filme
 	 *
-	 * @param input Parametros a serem atualizados
+	 * @param change Alteração a ser aplicada sobre o filme guardado
 	 *
 	 * @return Filme após a alteração
 	 */
-	public Film updateDescription(Film film, InputParameter input) {
-		ReturnService updated = films.updateAndGet(current -> {
+	public FilmStoreDto update(Integer id, UnaryOperator<FilmStoreDto> change) {
+		ReturnServiceStoreDto updated = films.updateAndGet(current -> {
 			if (current == null) {
 				return null;
 			}
-			List<Film> nwFilms = current.results().stream().map(
-					item -> item.id().equals(film.id()) ? item.updateDescription(input.description()) : item
+			List<FilmStoreDto> nwFilms = current.results().stream().map(
+					item -> item.id().equals(id) ? change.apply(item) : item
 			).collect(Collectors.toList());
 			if (nwFilms.equals(current.results())) {
 				return current;
 			}
-			return new ReturnService(current.count(), current.next(), current.previous(), nwFilms);
+			return new ReturnServiceStoreDto(current.count(), current.next(), current.previous(), nwFilms);
 		});
-		return getById(updated, film.id());
+		return getById(updated, id);
 	}
 
-	private Film getById(ReturnService current, Integer id) {
+	private FilmStoreDto getById(ReturnServiceStoreDto current, Integer id) {
 		if (current == null) {
 			return null;
 		}

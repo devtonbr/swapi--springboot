@@ -38,6 +38,16 @@ class HexagonalTest {
             .that().haveSimpleNameEndingWith("DataSource")
             .should().dependOnClassesThat().haveSimpleNameEndingWith("DataSource");
 
+    static final ArchRule STORE_AND_API_MUST_NOT_ACCESS_ENTITIES = noClasses()
+            .that().resideInAnyPackage("..datasource.store", "..datasource.store.dto..", "..datasource.api.dto..")
+            .should().dependOnClassesThat().resideInAPackage("..entity..")
+            .as("O store e os dtos do datasource não devem acessar entities; a conversão é feita pelos mappers");
+
+    @ArchTest
+    static void storeAndApiMustNotAccessEntities(JavaClasses classes) {
+        STORE_AND_API_MUST_NOT_ACCESS_ENTITIES.check(classes);
+    }
+
     @ArchTest
     static void layersValidator(JavaClasses classes) {
         LAYERS_VALIDATOR.check(classes);

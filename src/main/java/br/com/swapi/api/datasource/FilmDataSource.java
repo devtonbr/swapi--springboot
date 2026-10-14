@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.swapi.api.datasource.store.aspects.ReturnNullObject;
 import br.com.swapi.api.datasource.store.FilmMemoryStore;
+import br.com.swapi.api.datasource.store.mapper.FilmStoreMapper;
 import br.com.swapi.api.entity.Film;
 import br.com.swapi.api.entity.InputParameter;
 import br.com.swapi.api.entity.ReturnService;
@@ -31,7 +32,7 @@ public class FilmDataSource implements FilmRepository {
 	 */
 	@Override
 	public void saveAll(final ReturnService films) {
-		store.load(films);
+		store.load(FilmStoreMapper.INSTANCE.map(films));
 	}
 
 	/**
@@ -42,7 +43,7 @@ public class FilmDataSource implements FilmRepository {
 	@Override
 	@ReturnNullObject
     public ReturnService listAll() {
-    	  return store.listAllFilms();
+    	  return FilmStoreMapper.INSTANCE.map(store.listAllFilms());
 	}
 
 
@@ -56,7 +57,7 @@ public class FilmDataSource implements FilmRepository {
 	@Override
 	@ReturnNullObject
 	public Film findById(final Integer id) {
-		return store.getById(id);
+		return FilmStoreMapper.INSTANCE.map(store.getById(id));
 	}
 
 	/**
@@ -71,7 +72,10 @@ public class FilmDataSource implements FilmRepository {
 	@Override
 	@ReturnNullObject
 	public Film updateDescription(final Film film, final InputParameter inputParameter) {
-		return store.updateDescription(film, inputParameter);
+		// a regra da versão fica na entity; o store só aplica a alteração de forma atômica
+		return FilmStoreMapper.INSTANCE.map(store.update(film.id(), stored ->
+				FilmStoreMapper.INSTANCE.map(
+						FilmStoreMapper.INSTANCE.map(stored).updateDescription(inputParameter.description()))));
 	}
 
 }
