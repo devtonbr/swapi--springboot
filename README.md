@@ -172,12 +172,6 @@ O `render.yaml` deixa o deploy automático do Render desligado, para que a publi
 2. No GitHub, em **Settings > Secrets and variables > Actions > New repository secret**, crie o secret `RENDER_DEPLOY_HOOK_URL` com essa URL.
 3. A partir do próximo push em `main`, o job "Deploy no Render" mostra a mensagem "Deploy solicitado ao Render." e o novo deploy aparece na aba **Events** do serviço.
 
-### Custos e limites do plano gratuito
-
-- O plano gratuito não gera cobrança. Confira a página **Billing** do workspace para ver o consumo e se há cartão cadastrado.
-- O serviço hiberna depois de alguns minutos sem acesso. A primeira chamada seguinte demora perto de um minuto, e as descrições alteradas voltam ao original.
-- A API fica pública: qualquer pessoa com a URL consegue alterar as descrições pelo PUT.
-
 ### Removendo a aplicação
 
 1. No serviço, em **Settings**, role até o fim da página e clique em **Delete Web Service**.
