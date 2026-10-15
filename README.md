@@ -70,7 +70,7 @@ Inicie com a classe Application.java
 
 ## Variáveis de ambiente
 
-A aplicação não usa config-server. A configuração é feita por variáveis de ambiente:
+A configuração é feita por variáveis de ambiente:
 
 ```
 SWAPI_ENDPOINT : endpoint da api de filmes do StarWars (padrão: https://swapi.py4e.com/api/films/)
@@ -104,7 +104,7 @@ Os campos `trace` e `span` são preenchidos durante o atendimento das requisiç�
 
 ## Estado em memória
 
-Os filmes são carregados da api do StarWars na subida da aplicação e ficam em memória. As descrições alteradas pelo PUT se perdem ao reiniciar.
+Os filmes são carregados da api do StarWars na subida da aplicação e ficam em memória.
 
 ## Controle de versão
 
